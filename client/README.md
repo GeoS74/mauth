@@ -3,7 +3,7 @@
 ### Форма авторизации/регистрации
 
 Форма состоит из полей ввода и кнопки ввода и элементов управления.
-![[./temp/authform.png]]
+![Форма входа](https://github.com/GeoS74/mauth/blob/main/client/temp/authform.png)
 
 Поля ввода:
 - email (type text);
