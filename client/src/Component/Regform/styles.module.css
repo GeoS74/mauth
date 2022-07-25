@@ -1,0 +1,95 @@
+.root {
+  background-color: rgba(110, 110, 110, 0.5);
+  padding: 1px;
+}
+
+.border {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  background-color: rgb(248, 248, 250);
+  width: 404px;
+  height: 354px;
+  border: 1px solid rgb(38, 128, 226);
+  font-size: 15px;
+}
+
+.border input {
+  margin-top: 7px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.border button {
+  background-color: rgb(38, 128, 226);
+  margin-top: 10px;
+  height: 36px;
+  color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.foo {
+  margin: 7px 30px;
+}
+
+.email {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.pass {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.paslink {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.password {
+  display: flex;
+  position: relative;
+}
+
+.password input {
+  width: 100%;
+}
+
+.password a {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url(./image/eye_slash.svg) 0 0 no-repeat;
+}
+
+.passwordSlash {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url(./image/eye_slash.svg) 0 0 no-repeat;
+}
+
+.name {  
+  display: flex;
+  flex-direction: column;
+}
+
+.pandlink {
+  display: flex;
+  justify-content: center;
+}
+
+.border p {
+  margin: 0;
+}
