@@ -3,7 +3,7 @@ import styles from "./styles.module.css";
 import classNames from "classnames";
 import { useState } from "react";
 
-export const Regform = () => {
+export const Regform = (div, set) => {
   const [valueType, setValueType] = useState("password");
 
   const passwordEye = (valueType) => {

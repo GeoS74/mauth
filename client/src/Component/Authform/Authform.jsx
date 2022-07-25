@@ -3,8 +3,8 @@ import styles from "./styles.module.css";
 import classNames from "classnames";
 import { useState } from "react";
 
-export const Authform = () => {
-  const [valueType, setValueType] = useState("password");
+export const Authform = (div, set) => {
+  const [valueType, setValueType] = useState("text");
 
   const passwordEye = (valueType) => {
     if (valueType === "password") {
@@ -15,8 +15,9 @@ export const Authform = () => {
     return valueType;
   };
 
+
   return (
-    <div className={styles.root}>
+    <div className={classNames(div.div === 0 ? styles.root : styles.rootHidden)}>
       <div className={styles.border}>
         <div className={classNames(styles.email, styles.foo)}>
           <label htmlFor="Email">Email</label>
@@ -28,16 +29,16 @@ export const Authform = () => {
           </div>
           <div className={styles.password}>
             <input type={valueType} placeholder="password" />
-            <a
+            <a className={classNames(valueType === "password" ? styles.passwordSlash : styles.passwordNotSlash)}
               href="#"
-              onClick={() => setValueType(passwordEye(valueType))}
+              onClick={() => setValueType(passwordEye(valueType), console.log(div))}
             ></a>
           </div>
         </div>
         <button className={classNames(styles.foo)}>Sign in</button>
         <div className={classNames(styles.foo, styles.pandlink)}>
           <p>
-            Not registered?<a href="#">Create an account</a>
+            Not registered?<a href="#" onClick={() => (console.log(div))}>Create an account</a>
           </p>
         </div>
       </div>

@@ -3,6 +3,12 @@
   padding: 1px;
 }
 
+.rootHidden {
+  background-color: rgba(110, 110, 110, 0.5);
+  padding: 1px;
+  display: none;
+}
+
 .border {
   display: flex;
   flex-direction: column;
@@ -60,7 +66,17 @@
   width: 100%;
 }
 
-.password a {
+.passwordNotSlash {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: url(./image/eye.svg) 0 0 no-repeat;
+}
+
+.passwordSlash {
   position: absolute;
   top: 10px;
   right: 10px;
