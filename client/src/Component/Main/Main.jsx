@@ -4,13 +4,13 @@ import { Regform } from "../Regform/Regform";
 import styles from "./styles.module.css";
 
 export const Main = () => {
-  const [valueDiv, setValeuDiv] = useState(0)
-
+  const [valueDiv, setValueDiv] = useState(0);
+  // console.log(valueDiv);
 
   return (
     <div className={styles.root}>
-      <Authform div={valueDiv} set={setValeuDiv} />
-      <Regform div={valueDiv} set={setValeuDiv} />
+      <Authform div1={valueDiv} set={setValueDiv} />
+      <Regform div1={valueDiv} set={setValueDiv} />
     </div>
   );
 };

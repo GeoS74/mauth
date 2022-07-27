@@ -3,7 +3,7 @@ import styles from "./styles.module.css";
 import classNames from "classnames";
 import { useState } from "react";
 
-export const Authform = (div, set) => {
+export const Authform = ({ div1, set }) => {
   const [valueType, setValueType] = useState("text");
 
   const passwordEye = (valueType) => {
@@ -15,9 +15,8 @@ export const Authform = (div, set) => {
     return valueType;
   };
 
-
   return (
-    <div className={classNames(div.div === 0 ? styles.root : styles.rootHidden)}>
+    <div className={classNames(div1 == 0 ? styles.root : styles.rootHidden)}>
       <div className={styles.border}>
         <div className={classNames(styles.email, styles.foo)}>
           <label htmlFor="Email">Email</label>
@@ -29,16 +28,24 @@ export const Authform = (div, set) => {
           </div>
           <div className={styles.password}>
             <input type={valueType} placeholder="password" />
-            <a className={classNames(valueType === "password" ? styles.passwordSlash : styles.passwordNotSlash)}
+            <a
+              className={classNames(
+                valueType === "password"
+                  ? styles.passwordSlash
+                  : styles.passwordNotSlash
+              )}
               href="#"
-              onClick={() => setValueType(passwordEye(valueType), console.log(div))}
+              onClick={() => setValueType(passwordEye(valueType))}
             ></a>
           </div>
         </div>
         <button className={classNames(styles.foo)}>Sign in</button>
         <div className={classNames(styles.foo, styles.pandlink)}>
           <p>
-            Not registered?<a href="#" onClick={() => (console.log(div))}>Create an account</a>
+            Not registered?
+            <a href="#" onClick={() => set((div1 = 1))}>
+              Create an account
+            </a>
           </p>
         </div>
       </div>

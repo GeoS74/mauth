@@ -3,7 +3,7 @@ import styles from "./styles.module.css";
 import classNames from "classnames";
 import { useState } from "react";
 
-export const Regform = (div, set) => {
+export const Regform = ({ div1, set }) => {
   const [valueType, setValueType] = useState("password");
 
   const passwordEye = (valueType) => {
@@ -16,7 +16,7 @@ export const Regform = (div, set) => {
   };
 
   return (
-    <div className={styles.root}>
+    <div className={classNames(div1 == 0 ? styles.rootHidden : styles.root)}>
       <div className={styles.border}>
         <div className={classNames(styles.email, styles.foo)}>
           <label htmlFor="Email">Email</label>
@@ -41,7 +41,10 @@ export const Regform = (div, set) => {
         <button className={classNames(styles.foo)}>Create in account</button>
         <div className={classNames(styles.foo, styles.pandlink)}>
           <p>
-            Not registered?<a href="#">Sign in</a>
+            Not registered?
+            <a href="#" onClick={() => set((div1 = 0))}>
+              Sign in
+            </a>
           </p>
         </div>
       </div>

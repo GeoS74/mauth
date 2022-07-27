@@ -3,6 +3,12 @@
   padding: 1px;
 }
 
+.rootHidden {
+  background-color: rgba(110, 110, 110, 0.5);
+  padding: 1px;
+  display: none;
+}
+
 .border {
   display: flex;
   flex-direction: column;
