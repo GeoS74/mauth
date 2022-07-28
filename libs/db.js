@@ -1,6 +1,6 @@
-const {Pool} = require('pg');
+const { Pool } = require('pg');
 
-const config = require('../config')
+const config = require('../config');
 
 const pool = new Pool({
   user: config.postgres.user,
@@ -10,6 +10,4 @@ const pool = new Pool({
   port: config.postgres.port,
 });
 
-module.exports.query = (text, params) => {
-  return pool.query(text, params);
-}
+module.exports.query = (text, params) => pool.query(text, params);
