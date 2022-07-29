@@ -18,6 +18,7 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-restricted-syntax': 'off',
     'no-await-in-loop': 'off',
+    'no-param-reassign': 'off',
   },
   ignorePatterns: ['*.test.js', '/files/*'],
 };
