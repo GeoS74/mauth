@@ -25,13 +25,20 @@ const data = {
     CREATE EXTENSION IF NOT EXISTS "pgcrypto";
     CREATE TABLE users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      email text NOT NULL,
-      password text NOT NULL,
-      name text
+      email text UNIQUE NOT NULL,
+      passwordHash text NOT NULL,
+      salt text NOT NULL,
+      rank text NOT NULL DEFAULT 'user',
+      verificationToken text NULL,
+      recoveryToken text NULL,
+      name text NULL,
+      createdAt TIMESTAMP DEFAULT NOW(),
+      updatedAt TIMESTAMP DEFAULT NOW()
     );
   `)
     .then(() => console.log('table "users" create'))
     .catch((error) => console.log(error.message));
 
   console.log('...ok...');
+  process.exit();
 })();
