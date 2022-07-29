@@ -9,7 +9,7 @@ module.exports.generate = async (password, salt) => {
 };
 
 module.exports.check = async (user, password) => {
-  if(!password) {
+  if (!password) {
     return false;
   }
 
@@ -17,19 +17,17 @@ module.exports.check = async (user, password) => {
   return hash === user.passwordhash;
 };
 
-module.exports.salt = async () => {
-  return new Promise((resolve, reject) => {
-    crypto.randomBytes(
-      config.crypto.length,
-      (error, buffer) => {
-        if (error) {
-          reject(error.message);
-        }
-        resolve(buffer.toString('hex'));
-      },
-    );
-  });
-}
+module.exports.salt = async () => new Promise((resolve, reject) => {
+  crypto.randomBytes(
+    config.crypto.length,
+    (error, buffer) => {
+      if (error) {
+        reject(error.message);
+      }
+      resolve(buffer.toString('hex'));
+    },
+  );
+});
 
 function _generatePassword(password, salt) {
   return new Promise((resolve, reject) => {
@@ -48,4 +46,3 @@ function _generatePassword(password, salt) {
     );
   });
 }
-

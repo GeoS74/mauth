@@ -16,7 +16,6 @@ module.exports = new LocalStrategy(
       if (!user) {
         return done(null, false, 'user not found');
       }
-      
 
       if (!await password.check(user, pass)) {
         return done(null, false, 'incorrect password');
@@ -29,7 +28,7 @@ module.exports = new LocalStrategy(
   }),
 );
 
-async function _findUser(email){
+async function _findUser(email) {
   return db.query('SELECT * FROM users WHERE email=$1', [email])
-        .then(res => res.rows[0]);
+    .then((res) => res.rows[0]);
 }

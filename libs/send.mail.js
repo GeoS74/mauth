@@ -13,12 +13,10 @@ const transport = nodemailer.createTransport({
   },
 });
 
-module.exports = async mail => {
-  return transport.sendMail({
-    from: mail.from,
-    to: mail.to,
-    subject: mail.subject,
-    text: mail.text || '',
-    html: mail.html || '',
-  })
-}
+module.exports = async (mail) => transport.sendMail({
+  from: mail.from,
+  to: mail.to,
+  subject: mail.subject,
+  text: mail.text || '',
+  html: mail.html || '',
+});

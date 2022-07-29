@@ -17,7 +17,7 @@ module.exports.signup = async (ctx) => {
   } catch (error) {
     if (error.code === '23505') {
       ctx.status = 400;
-      ctx.throw(null, 'email is not unique')
+      ctx.throw(null, 'email is not unique');
     }
 
     if (!ctx.status) {
@@ -33,10 +33,8 @@ module.exports.signup = async (ctx) => {
 
 module.exports.signin = async (ctx, next) => {
   try {
-    const user = await _autenticateUser.call(null, ctx)
-
-    ctx.status = 200;
-    ctx.body = mapper(ctx.user);
+    await _autenticateUser.call(null, ctx);
+    await next();
   } catch (error) {
     if (!ctx.status) {
       console.log(error);
@@ -56,19 +54,19 @@ module.exports.signout = (ctx) => {
   };
 };
 
-module.exports.confirm = async ctx => {
+module.exports.confirm = async (ctx) => {
   try {
-    const user = await _confirmAccount(ctx.params.token)
+    const user = await _confirmAccount(ctx.params.token);
 
     if (!user) {
       ctx.status = 400;
-      ctx.throw(null, 'invalid verification token')
+      ctx.throw(null, 'invalid verification token');
     }
 
     ctx.status = 200;
     ctx.body = {
-      message: `you have successfully verified your ${user.email} email address`
-    }
+      message: `you have successfully verified your ${user.email} email address`,
+    };
   } catch (error) {
     if (!ctx.status) {
       console.log(error);
@@ -79,11 +77,13 @@ module.exports.confirm = async ctx => {
       error: error.message,
     };
   }
-}
+};
 
-module.exports.resetRecoveryToken = async ctx => {
-
-}
+module.exports.resetRecoveryToken = async (ctx) => {
+  await _delRecoveryToken(ctx.user.id);
+  ctx.status = 200;
+  ctx.body = mapper(ctx.user);
+};
 
 async function _createUser(data) {
   const salt = await password.salt();
@@ -114,8 +114,8 @@ async function _sendVerifyToken(user) {
     subject: 'Подтверждение email',
     html: `Вы зарегестрировались на ${config.server.domain},
     для подтверждения регистрации перейдите по ссылке:<br>
-    <a href="http://${config.server.domain}/confirm/${user.verificationtoken}">${config.server.domain}/confirm/${user.verificationtoken}</a>`
-  })
+    <a href="http://${config.server.domain}/confirm/${user.verificationtoken}">${config.server.domain}/confirm/${user.verificationtoken}</a>`,
+  });
 }
 
 async function _confirmAccount(token) {
@@ -128,7 +128,6 @@ async function _confirmAccount(token) {
 
 async function _autenticateUser(ctx) {
   await passport.authenticate('local', async (error, user, info) => {
-
     if (error) {
       ctx.status = 500;
       throw error;
@@ -140,5 +139,13 @@ async function _autenticateUser(ctx) {
     }
 
     ctx.user = user;
-  })(ctx)
+  })(ctx);
+}
+
+async function _delRecoveryToken(userId) {
+  return db.query(`UPDATE users 
+      SET recoverytoken=NULL 
+      WHERE id=$1
+      RETURNING *`, [userId])
+    .then((res) => res.rows[0]);
 }

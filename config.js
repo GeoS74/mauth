@@ -25,5 +25,5 @@ module.exports = {
     pass: process.env.MAILER_PASS || 'jXYp3VB8uYG6BccH2Q',
     // secure: false,
     // ignoreTLS: true,
-  }
+  },
 };
