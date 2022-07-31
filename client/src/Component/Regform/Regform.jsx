@@ -17,7 +17,7 @@ export const Regform = ({ div1, set }) => {
   };
 
   return (
-    <div className={classNames(div1 == 0 ? styles.rootHidden : styles.root)}>
+    <div className={classNames(styles.root)}>
       <div className={styles.border}>
         <div className={classNames(styles.email, styles.foo)}>
           <label htmlFor="Email">Email</label>
@@ -29,7 +29,9 @@ export const Regform = ({ div1, set }) => {
           </div>
           <div className={styles.password}>
             <input type={valueType} placeholder="password" />
-            <Eye valueSlash={1} />
+            <button onClick={() => console.log(1)}>
+              <Eye valueSlash={0} />
+            </button>
           </div>
         </div>
         <div className={classNames(styles.name, styles.foo)}>
