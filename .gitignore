@@ -1,3 +1,5 @@
 /node_modules
 secret.env
 test.js
+start.bat
+Git.txt
