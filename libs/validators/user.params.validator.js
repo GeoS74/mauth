@@ -1,25 +1,27 @@
 module.exports.signup = async (ctx, next) => {
   try {
     _checkParams.call(null, ctx);
-    await next();
   } catch (error) {
     ctx.status = error.status;
     ctx.body = {
       error: error.message,
     };
+    return;
   }
+  await next();
 };
 
 module.exports.signin = async (ctx, next) => {
   try {
     _checkParams.call(null, ctx);
-    await next();
   } catch (error) {
     ctx.status = error.status;
     ctx.body = {
       error: error.message,
     };
+    return;
   }
+  await next();
 };
 
 module.exports.signout = async (ctx, next) => {

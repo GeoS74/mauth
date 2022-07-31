@@ -17,7 +17,6 @@ router.post(
   koaBody(),
   userValidator.signin,
   authController.signin,
-  authController.resetRecoveryToken,
 );
 router.put(
   '/signout',

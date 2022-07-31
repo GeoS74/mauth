@@ -15,32 +15,38 @@ module.exports.signup = async (ctx) => {
     ctx.status = 201;
     ctx.body = mapper(user);
   } catch (error) {
-    if (error.code === '23505') {
+    if (error.code === '23505') { //unique_violation
       ctx.status = 400;
-      ctx.throw(null, 'email is not unique');
+      ctx.body = {
+        error: 'email is not unique',
+      };
+      return;
     }
 
-    if (!ctx.status) {
+    if (!error.status) {
       console.log(error);
     }
 
-    ctx.status = ctx.status ? ctx.status : 500;
+    ctx.status = error.status || 500;
     ctx.body = {
       error: error.message,
     };
   }
 };
 
-module.exports.signin = async (ctx, next) => {
+module.exports.signin = async (ctx) => {
   try {
     await _autenticateUser.call(null, ctx);
-    await next();
+    await _delRecoveryToken(ctx.user.id);
+
+    ctx.status = 200;
+    ctx.body = mapper(ctx.user);
   } catch (error) {
-    if (!ctx.status) {
+    if (!error.status) {
       console.log(error);
     }
 
-    ctx.status = ctx.status ? ctx.status : 500;
+    ctx.status = error.status || 500;
     ctx.body = {
       error: error.message,
     };
@@ -56,11 +62,14 @@ module.exports.signout = (ctx) => {
 
 module.exports.confirm = async (ctx) => {
   try {
-    const user = await _confirmAccount(ctx.params.token);
+    const row = await _confirmAccount(ctx.params.token);
+    if (!row?.id) {
+      ctx.throw(400, 'invalid verification token');
+    }
 
+    const user = await _findUser(row.id);
     if (!user) {
-      ctx.status = 400;
-      ctx.throw(null, 'invalid verification token');
+      ctx.throw(400, 'invalid verification token');
     }
 
     ctx.status = 200;
@@ -68,21 +77,15 @@ module.exports.confirm = async (ctx) => {
       message: `you have successfully verified your ${user.email} email address`,
     };
   } catch (error) {
-    if (!ctx.status) {
+    if (!error.status) {
       console.log(error);
     }
 
-    ctx.status = ctx.status ? ctx.status : 500;
+    ctx.status = error.status || 500;
     ctx.body = {
       error: error.message,
     };
   }
-};
-
-module.exports.resetRecoveryToken = async (ctx) => {
-  await _delRecoveryToken(ctx.user.id);
-  ctx.status = 200;
-  ctx.body = mapper(ctx.user);
 };
 
 async function _createUser(data) {
@@ -122,7 +125,12 @@ async function _confirmAccount(token) {
   return db.query(`UPDATE users 
       SET verificationtoken=NULL 
       WHERE verificationtoken=$1
-      RETURNING *`, [token])
+      RETURNING id`, [token])
+    .then((res) => res.rows[0]);
+}
+
+async function _findUser(id) {
+  return db.query(`SELECT * FROM users WHERE id=$1`, [id])
     .then((res) => res.rows[0]);
 }
 
@@ -134,8 +142,7 @@ async function _autenticateUser(ctx) {
     }
 
     if (!user) {
-      ctx.status = 400;
-      ctx.throw(null, info);
+      ctx.throw(400, info);
     }
 
     ctx.user = user;
@@ -144,7 +151,7 @@ async function _autenticateUser(ctx) {
 
 async function _delRecoveryToken(userId) {
   return db.query(`UPDATE users 
-      SET recoverytoken=NULL 
+      SET recoverytoken=NULL, updatedat=DEFAULT
       WHERE id=$1
       RETURNING *`, [userId])
     .then((res) => res.rows[0]);

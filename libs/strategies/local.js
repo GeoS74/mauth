@@ -17,6 +17,10 @@ module.exports = new LocalStrategy(
         return done(null, false, 'user not found');
       }
 
+      if (user.verificationtoken) {
+        return done(null, false, 'email not confirmed');
+      }
+
       if (!await password.check(user, pass)) {
         return done(null, false, 'incorrect password');
       }
