@@ -15,7 +15,7 @@ module.exports.signup = async (ctx) => {
     ctx.status = 201;
     ctx.body = mapper(user);
   } catch (error) {
-    if (error.code === '23505') { //unique_violation
+    if (error.code === '23505') { // unique_violation
       ctx.status = 400;
       ctx.body = {
         error: 'email is not unique',
@@ -34,13 +34,10 @@ module.exports.signup = async (ctx) => {
   }
 };
 
-module.exports.signin = async (ctx) => {
+module.exports.signin = async (ctx, next) => {
   try {
     await _autenticateUser.call(null, ctx);
     await _delRecoveryToken(ctx.user.id);
-
-    ctx.status = 200;
-    ctx.body = mapper(ctx.user);
   } catch (error) {
     if (!error.status) {
       console.log(error);
@@ -50,7 +47,9 @@ module.exports.signin = async (ctx) => {
     ctx.body = {
       error: error.message,
     };
+    return;
   }
+  await next();
 };
 
 module.exports.signout = (ctx) => {
@@ -76,6 +75,22 @@ module.exports.confirm = async (ctx) => {
     ctx.body = {
       message: `you have successfully verified your ${user.email} email address`,
     };
+  } catch (error) {
+    if (!error.status) {
+      console.log(error);
+    }
+
+    ctx.status = error.status || 500;
+    ctx.body = {
+      error: error.message,
+    };
+  }
+};
+
+module.exports.me = async (ctx) => {
+  try {
+    ctx.status = 200;
+    ctx.body = ctx.user;
   } catch (error) {
     if (!error.status) {
       console.log(error);
@@ -130,7 +145,7 @@ async function _confirmAccount(token) {
 }
 
 async function _findUser(id) {
-  return db.query(`SELECT * FROM users WHERE id=$1`, [id])
+  return db.query('SELECT * FROM users WHERE id=$1', [id])
     .then((res) => res.rows[0]);
 }
 

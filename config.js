@@ -26,4 +26,15 @@ module.exports = {
     // secure: false,
     // ignoreTLS: true,
   },
+  jwt: {
+    ttl: 3600,
+    secretKey: process.env.JWT_SECRET_KEY || 'any secret phrase',
+  },
+  session: {
+    max: 5,
+    ttl: '30 day',
+  },
+  verification: {
+    ttl: '30 minute',
+  },
 };

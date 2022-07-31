@@ -39,13 +39,16 @@ const data = {
     .then(() => console.log('table "users" create'))
     .catch((error) => console.log(error.message));
 
-
   await pool.query(`
     CREATE OR REPLACE FUNCTION expire_del_old_rows() RETURNS trigger
       LANGUAGE plpgsql
       AS $$
     BEGIN
-      DELETE FROM users WHERE updatedat < NOW() - INTERVAL '30 minute';
+      DELETE FROM users 
+        WHERE 
+          verificationtoken IS NULL
+          AND
+          updatedat < NOW() - INTERVAL '${config.verification.ttl}';
       RETURN NEW;
     END;
     $$;
@@ -54,8 +57,38 @@ const data = {
       AFTER UPDATE OF verificationtoken ON users
       EXECUTE PROCEDURE expire_del_old_rows();
   `)
-    .then(() => console.log('function "expire_del_old_rows()" create'))
+    .then(() => console.log('trigger "expire_del_old_rows_trigger" create'))
     .catch((error) => console.log(error.message));
-  console.log('...ok...');
+
+  await pool.query(`
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    CREATE TABLE sessions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      id_user uuid NOT NULL,
+      token text NOT NULL,
+      lastvisit timestamp DEFAULT NOW()
+    );
+  `)
+    .then(() => console.log('table "sessions" create'))
+    .catch((error) => console.log(error.message));
+
+  await pool.query(`
+    CREATE OR REPLACE FUNCTION expire_del_old_sessions() RETURNS trigger
+      LANGUAGE plpgsql
+      AS $$
+    BEGIN
+      DELETE FROM sessions WHERE lastvisit < NOW() - INTERVAL '${config.session.ttl}';
+      RETURN NEW;
+    END;
+    $$;
+
+    CREATE OR REPLACE TRIGGER expire_del_old_sessions_trigger
+      AFTER UPDATE ON sessions
+      EXECUTE PROCEDURE expire_del_old_sessions();
+  `)
+    .then(() => console.log('trigger "expire_del_old_sessions_trigger" create'))
+    .catch((error) => console.log(error.message));
+
+  console.log('database init complete');
   process.exit();
 })();
