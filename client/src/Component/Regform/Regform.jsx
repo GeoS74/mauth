@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./styles.module.css";
 import classNames from "classnames";
+import { Eye } from "../Eye/Eye";
 import { useState } from "react";
 
 export const Regform = ({ div1, set }) => {
@@ -28,10 +29,7 @@ export const Regform = ({ div1, set }) => {
           </div>
           <div className={styles.password}>
             <input type={valueType} placeholder="password" />
-            <a
-              href="#"
-              onClick={() => setValueType(passwordEye(valueType))}
-            ></a>
+            <Eye valueSlash={1} />
           </div>
         </div>
         <div className={classNames(styles.name, styles.foo)}>
