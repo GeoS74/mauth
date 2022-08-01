@@ -52,5 +52,11 @@ router.get(
   userValidator.uuid,
   auth.resetPassword,
 );
+router.patch(
+  '/change/password',
+  koaBody(),
+  sessionValidator.accessToken,
+  auth.changepass,
+);
 
 module.exports = router.routes();

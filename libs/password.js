@@ -32,7 +32,7 @@ module.exports.salt = async () => new Promise((resolve, reject) => {
 
 module.exports.random = () => {
   return generator.generate({
-    length: 6,
+    length: 8,
     numbers: true,
   })
 }

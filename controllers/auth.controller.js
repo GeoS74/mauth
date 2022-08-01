@@ -83,6 +83,10 @@ module.exports.confirm = async (ctx) => {
 module.exports.forgot = async (ctx) => {
   try {
     const user = await _createRecoveryToken(ctx.request.body.email);
+    if(!user){
+      ctx.throw(404, 'user not found')
+    }
+
     await _sendRecoveryToken(user);
 
     ctx.status = 200;
@@ -126,6 +130,37 @@ module.exports.resetPassword = async (ctx) => {
       error: error.message,
     };
   }
+}
+
+module.exports.changepass = async (ctx) => {
+  try {
+    await _setNewPassword(ctx.user.id, ctx.request.body.password)
+    ctx.status = 200;
+    ctx.body = {
+      message: 'password changed successfully'
+    }
+  } catch (error) {
+    if (!error.status) {
+      console.log(error);
+    }
+
+    ctx.status = error.status || 500;
+    ctx.body = {
+      error: error.message,
+    };
+  }
+}
+
+async function _setNewPassword(userId, pass){
+  const salt = await password.salt();
+  const passwordHash = await password.generate(pass, salt);
+  return db.query(`UPDATE users
+    SET 
+      passwordhash=$2,
+      salt=$3,
+      updatedat=DEFAULT
+    WHERE id=$1
+    `, [userId, passwordHash, salt]);
 }
 
 async function _temporaryPassword(recoveryToken, tempPassword){
