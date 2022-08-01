@@ -3,10 +3,11 @@ const jwt = require('jsonwebtoken');
 
 const config = require('../config');
 const db = require('../libs/db');
+const userMapper = require('../mappers/user.mapper');
 
 module.exports.start = async (ctx) => {
   try {
-    const tokens = _generateTokens();
+    const tokens = _generateTokens(userMapper(ctx.user));
     await _checkMaxCountSessions(ctx.user.id);
     await _createSession(ctx.user.id, tokens.refresh);
 
@@ -27,22 +28,40 @@ module.exports.start = async (ctx) => {
 module.exports.access = async (ctx) => {
   try {
     const token = ctx.get('Authorization').split(' ')[1];
-    const decoded = jwt.verify(token, config.jwt.secretKey);
-    console.log(decoded);
+    jwt.verify(token, config.jwt.secretKey);
 
     ctx.status = 200;
-    ctx.body = {};
+    ctx.body = jwt.decode(token).user
   } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
+    ctx.status = 401;
+    ctx.set('WWW-Authenticate', 'Bearer');
     ctx.body = {
-      error: error.message,
+      error: 'invalid token',
     };
   }
 };
+
+module.exports.refresh = async (ctx) => {
+  try {
+    const refreshToken = ctx.get('Authorization').split(' ')[1];
+    const session = await _findSession(refreshToken);
+    if(!session){
+      throw new Error();
+    }
+
+    const tokens = _generateTokens(userMapper(session));
+    await _refreshSession(session.sid, tokens.refresh);
+    
+    ctx.status = 200;
+    ctx.body = tokens;
+  } catch (error) {
+    ctx.status = 401;
+    ctx.set('WWW-Authenticate', 'Bearer');
+    ctx.body = {
+      error: 'invalid token',
+    };
+  }
+}
 
 function _generateTokens(user) {
   return {
@@ -60,21 +79,38 @@ async function _createSession(userId, token) {
   (id_user, token)  
   VALUES
   ($1, $2)
-    RETURNING *`, [userId, token]);
+  RETURNING *`, [userId, token]);
+}
+
+async function _refreshSession(sessionId, token){
+  return db.query(`UPDATE sessions
+    SET token=$2, lastvisit=DEFAULT
+    WHERE id=$1`, [sessionId, token]);
+}
+
+async function _findSession(token){
+  return db.query(`SELECT S.id as sid, * 
+    FROM sessions AS S
+    LEFT JOIN users AS U
+    ON U.id=S.id_user
+    WHERE 
+      S.token=$1 
+      AND 
+      lastvisit > NOW() - INTERVAL '${config.session.ttl}'
+  `, [token])
+  .then((res) => res.rows[0]);
+  ;
 }
 
 async function _checkMaxCountSessions(userId) {
   const countSession = await db.query(
-    `SELECT COUNT(*) 
-  FROM sessions
-  WHERE id_user=$1`,
+    `SELECT COUNT(*) FROM sessions WHERE id_user=$1`,
     [userId],
   ).then((res) => res.rows[0].count);
 
-  if (+countSession > config.session.max) {
+  if (+countSession >= config.session.max) {
     await db.query(
-      `DELETE FROM sessions
-    WHERE id_user=$1`,
+      `DELETE FROM sessions WHERE id_user=$1`,
       [userId],
     ).then((res) => res.rows[0]);
   }

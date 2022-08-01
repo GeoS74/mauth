@@ -14,7 +14,7 @@ const data = {
   let pool = new Pool(data);
 
   await pool.query(`CREATE DATABASE ${config.postgres.database}`)
-    .then(() => console.log(`database "${config.postgres.database}" create`))
+    .then(() => console.log(`create database "${config.postgres.database}"`))
     .catch((error) => console.log(error.message));
 
   // connect new database
@@ -36,7 +36,7 @@ const data = {
       updatedat timestamp DEFAULT NOW()
     );
   `)
-    .then(() => console.log('table "users" create'))
+    .then(() => console.log('create table "users"'))
     .catch((error) => console.log(error.message));
 
   await pool.query(`
@@ -54,10 +54,10 @@ const data = {
     $$;
 
     CREATE OR REPLACE TRIGGER expire_del_old_rows_trigger
-      AFTER UPDATE OF verificationtoken ON users
+      AFTER INSERT OR UPDATE OF verificationtoken ON users
       EXECUTE PROCEDURE expire_del_old_rows();
   `)
-    .then(() => console.log('trigger "expire_del_old_rows_trigger" create'))
+    .then(() => console.log('create trigger "expire_del_old_rows_trigger"'))
     .catch((error) => console.log(error.message));
 
   await pool.query(`
@@ -69,7 +69,7 @@ const data = {
       lastvisit timestamp DEFAULT NOW()
     );
   `)
-    .then(() => console.log('table "sessions" create'))
+    .then(() => console.log('create table "sessions"'))
     .catch((error) => console.log(error.message));
 
   await pool.query(`
@@ -83,10 +83,10 @@ const data = {
     $$;
 
     CREATE OR REPLACE TRIGGER expire_del_old_sessions_trigger
-      AFTER UPDATE ON sessions
+      AFTER INSERT OR UPDATE ON sessions
       EXECUTE PROCEDURE expire_del_old_sessions();
   `)
-    .then(() => console.log('trigger "expire_del_old_sessions_trigger" create'))
+    .then(() => console.log('create trigger "expire_del_old_sessions_trigger"'))
     .catch((error) => console.log(error.message));
 
   console.log('database init complete');
