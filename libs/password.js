@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const generator = require('generate-password');
 
 const config = require('../config');
 
@@ -28,6 +29,13 @@ module.exports.salt = async () => new Promise((resolve, reject) => {
     },
   );
 });
+
+module.exports.random = () => {
+  return generator.generate({
+    length: 6,
+    numbers: true,
+  })
+}
 
 function _generatePassword(password, salt) {
   return new Promise((resolve, reject) => {

@@ -32,10 +32,9 @@ module.exports = {
   },
   session: {
     max: 5,
-    // ttl: '30 day',
-    ttl: '1 minute',
+    ttl: '30 day',
   },
   verification: {
-    ttl: '1 minute',
+    ttl: '10 minute',
   },
 };

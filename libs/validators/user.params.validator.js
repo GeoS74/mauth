@@ -1,3 +1,5 @@
+const { validate: uuidValidate } = require('uuid');
+
 module.exports.signup = async (ctx, next) => {
   try {
     _checkParams.call(null, ctx);
@@ -24,9 +26,35 @@ module.exports.signin = async (ctx, next) => {
   await next();
 };
 
-module.exports.signout = async (ctx, next) => {
+module.exports.forgot = async (ctx, next) => {
+  try {
+    if(!_checkEmail(ctx.request.body.email)) {
+      ctx.throw(400, 'invalid email');
+    }
+  } catch (error) {
+    ctx.status = error.status;
+    ctx.body = {
+      error: error.message,
+    };
+    return;
+  }
   await next();
-};
+}
+
+module.exports.uuid = async (ctx, next) => {
+  try {
+    if (!uuidValidate(ctx.params.token)) {
+      ctx.throw(401, 'invalid token');
+    }
+  } catch (error) {
+    ctx.status = error.status;
+    ctx.body = {
+      error: error.message,
+    };
+    return;
+  }
+  await next();
+}
 
 function _checkParams(ctx) {
   if (!_checkEmail(ctx.request.body.email)) {

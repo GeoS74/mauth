@@ -63,6 +63,27 @@ module.exports.refresh = async (ctx) => {
   }
 }
 
+module.exports.destroy = async (ctx) => {
+  try {
+    const refreshToken = ctx.get('Authorization').split(' ')[1];
+    await _destroySession(refreshToken);
+
+    ctx.status = 200;
+    ctx.body = {
+      message: 'session destroyed'
+    }
+  } catch (error) {
+    if (!error.status) {
+      console.log(error);
+    }
+
+    ctx.status = error.status || 500;
+    ctx.body = {
+      error: error.message,
+    };
+  }
+}
+
 function _generateTokens(user) {
   return {
     refresh: uuid(),
@@ -99,6 +120,13 @@ async function _findSession(token){
       lastvisit > NOW() - INTERVAL '${config.session.ttl}'
   `, [token])
   .then((res) => res.rows[0]);
+  ;
+}
+
+async function _destroySession(token){
+  return db.query(`DELETE FROM sessions
+    WHERE token=$1
+  `, [token]);
   ;
 }
 

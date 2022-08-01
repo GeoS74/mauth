@@ -21,14 +21,15 @@ router.post(
   auth.signin,
   session.start,
 );
-router.put(
+router.delete(
   '/signout',
   koaBody(),
-  userValidator.signout,
-  auth.signout,
+  sessionValidator.refreshToken,
+  session.destroy,
 );
 router.get(
   '/confirm/:token',
+  userValidator.uuid,
   auth.confirm,
 );
 router.get(
@@ -40,9 +41,16 @@ router.get(
   sessionValidator.refreshToken,
   session.refresh,
 );
+router.patch(
+  '/forgot',
+  koaBody(),
+  userValidator.forgot,
+  auth.forgot,
+);
 router.get(
-  '/me',
-  auth.me,
+  '/forgot/:token',
+  userValidator.uuid,
+  auth.resetPassword,
 );
 
 module.exports = router.routes();

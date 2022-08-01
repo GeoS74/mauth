@@ -52,13 +52,6 @@ module.exports.signin = async (ctx, next) => {
   await next();
 };
 
-module.exports.signout = (ctx) => {
-  ctx.status = 501;
-  ctx.body = {
-    message: 'Not implemented',
-  };
-};
-
 module.exports.confirm = async (ctx) => {
   try {
     const row = await _confirmAccount(ctx.params.token);
@@ -87,10 +80,15 @@ module.exports.confirm = async (ctx) => {
   }
 };
 
-module.exports.me = async (ctx) => {
+module.exports.forgot = async (ctx) => {
   try {
+    const user = await _createRecoveryToken(ctx.request.body.email);
+    await _sendRecoveryToken(user);
+
     ctx.status = 200;
-    ctx.body = ctx.user;
+    ctx.body = {
+      message: `password reset link has been sent to your ${user.email} email address`,
+    };
   } catch (error) {
     if (!error.status) {
       console.log(error);
@@ -103,6 +101,47 @@ module.exports.me = async (ctx) => {
   }
 };
 
+module.exports.resetPassword = async (ctx) => {
+  try {
+    const tempPassword = password.random();
+
+    const user = await _temporaryPassword(ctx.params.token, tempPassword);
+    if (!user) {
+      ctx.throw(400, 'invalid recovery token');
+    }
+
+    await _sendTemporaryPassword(user, tempPassword);
+
+    ctx.status = 200;
+    ctx.body = {
+      message: `you have successfully reset your password. A new login password sent to ${user.email}`,
+    };
+  } catch (error) {
+    if (!error.status) {
+      console.log(error);
+    }
+
+    ctx.status = error.status || 500;
+    ctx.body = {
+      error: error.message,
+    };
+  }
+}
+
+async function _temporaryPassword(recoveryToken, tempPassword){
+  const salt = await password.salt();
+  const passwordHash = await password.generate(tempPassword, salt);
+  return db.query(`UPDATE users
+    SET 
+      passwordhash=$2,
+      salt=$3,
+      recoverytoken=NULL, 
+      updatedat=DEFAULT
+    WHERE recoverytoken=$1
+    RETURNING *`, [recoveryToken, passwordHash, salt])
+    .then(res => res.rows[0]);
+}
+
 async function _createUser(data) {
   const salt = await password.salt();
   const passwordHash = await password.generate(data.password, salt);
@@ -113,7 +152,6 @@ async function _createUser(data) {
     verificationToken: uuid(),
     name: data.name || null,
   };
-
   return db.query(
     `INSERT INTO users 
       (${Object.keys(user).join(',')})
@@ -125,6 +163,15 @@ async function _createUser(data) {
     .then((res) => res.rows[0]);
 }
 
+async function _createRecoveryToken(email) {
+  return db.query(`UPDATE users
+    SET recoverytoken=$1
+    WHERE email=$2
+    RETURNING recoverytoken, email
+  `, [uuid(), email])
+    .then(res => res.rows[0]);
+}
+
 async function _sendVerifyToken(user) {
   return sendMail({
     from: config.mailer.user,
@@ -133,6 +180,29 @@ async function _sendVerifyToken(user) {
     html: `Вы зарегестрировались на ${config.server.domain},
     для подтверждения регистрации перейдите по ссылке:<br>
     <a href="http://${config.server.domain}/confirm/${user.verificationtoken}">${config.server.domain}/confirm/${user.verificationtoken}</a>`,
+  });
+}
+
+async function _sendRecoveryToken(user) {
+  return sendMail({
+    from: config.mailer.user,
+    to: user.email,
+    subject: 'Восстановление пароля',
+    html: `Кто-то запросил сброс пароля на ${config.server.domain},
+    для подтверждения перейдите по ссылке:<br>
+    <a href="http://${config.server.domain}/forgot/${user.recoverytoken}">${config.server.domain}/forgot/${user.recoverytoken}</a>
+    <br>Если это не Вы, то проигнорируйте это письмо.`,
+  });
+}
+
+async function _sendTemporaryPassword(user, tempPassword) {
+  return sendMail({
+    from: config.mailer.user,
+    to: user.email,
+    subject: 'Временный пароль',
+    html: `Ваш пароль на ${config.server.domain} был изменён.<br>
+    Ваш новый пароль: ${tempPassword}<br>
+    `,
   });
 }
 
@@ -168,6 +238,5 @@ async function _delRecoveryToken(userId) {
   return db.query(`UPDATE users 
       SET recoverytoken=NULL, updatedat=DEFAULT
       WHERE id=$1
-      RETURNING *`, [userId])
-    .then((res) => res.rows[0]);
+      `, [userId]);
 }
