@@ -30,12 +30,10 @@ module.exports.salt = async () => new Promise((resolve, reject) => {
   );
 });
 
-module.exports.random = () => {
-  return generator.generate({
-    length: 8,
-    numbers: true,
-  })
-}
+module.exports.random = () => generator.generate({
+  length: 8,
+  numbers: true,
+});
 
 function _generatePassword(password, salt) {
   return new Promise((resolve, reject) => {

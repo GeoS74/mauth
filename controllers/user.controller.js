@@ -54,7 +54,7 @@ module.exports.signin = async (ctx, next) => {
 
 module.exports.confirm = async (ctx) => {
   try {
-    const row = await _confirmAccount(ctx.params.token);
+    const row = await _confirmAccount(ctx.token);
     if (!row?.id) {
       ctx.throw(400, 'invalid verification token');
     }
@@ -83,8 +83,8 @@ module.exports.confirm = async (ctx) => {
 module.exports.forgot = async (ctx) => {
   try {
     const user = await _createRecoveryToken(ctx.request.body.email);
-    if(!user){
-      ctx.throw(404, 'user not found')
+    if (!user) {
+      ctx.throw(404, 'user not found');
     }
 
     await _sendRecoveryToken(user);
@@ -109,7 +109,7 @@ module.exports.resetPassword = async (ctx) => {
   try {
     const tempPassword = password.random();
 
-    const user = await _temporaryPassword(ctx.params.token, tempPassword);
+    const user = await _temporaryPassword(ctx.token, tempPassword);
     if (!user) {
       ctx.throw(400, 'invalid recovery token');
     }
@@ -130,15 +130,15 @@ module.exports.resetPassword = async (ctx) => {
       error: error.message,
     };
   }
-}
+};
 
 module.exports.changepass = async (ctx) => {
   try {
-    await _setNewPassword(ctx.user.id, ctx.request.body.password)
+    await _setNewPassword(ctx.user.id, ctx.request.body.password);
     ctx.status = 200;
     ctx.body = {
-      message: 'password changed successfully'
-    }
+      message: 'password changed successfully',
+    };
   } catch (error) {
     if (!error.status) {
       console.log(error);
@@ -149,9 +149,24 @@ module.exports.changepass = async (ctx) => {
       error: error.message,
     };
   }
-}
+};
 
-async function _setNewPassword(userId, pass){
+module.exports.me = async (ctx) => {
+  try {
+    if (!ctx.user) {
+      ctx.throw(404, 'user not found');
+    }
+    ctx.status = 200;
+    ctx.body = ctx.user;
+  } catch (error) {
+    ctx.status = error.status || 500;
+    ctx.body = {
+      error: error.message,
+    };
+  }
+};
+
+async function _setNewPassword(userId, pass) {
   const salt = await password.salt();
   const passwordHash = await password.generate(pass, salt);
   return db.query(`UPDATE users
@@ -163,7 +178,7 @@ async function _setNewPassword(userId, pass){
     `, [userId, passwordHash, salt]);
 }
 
-async function _temporaryPassword(recoveryToken, tempPassword){
+async function _temporaryPassword(recoveryToken, tempPassword) {
   const salt = await password.salt();
   const passwordHash = await password.generate(tempPassword, salt);
   return db.query(`UPDATE users
@@ -174,7 +189,7 @@ async function _temporaryPassword(recoveryToken, tempPassword){
       updatedat=DEFAULT
     WHERE recoverytoken=$1
     RETURNING *`, [recoveryToken, passwordHash, salt])
-    .then(res => res.rows[0]);
+    .then((res) => res.rows[0]);
 }
 
 async function _createUser(data) {
@@ -204,7 +219,7 @@ async function _createRecoveryToken(email) {
     WHERE email=$2
     RETURNING recoverytoken, email
   `, [uuid(), email])
-    .then(res => res.rows[0]);
+    .then((res) => res.rows[0]);
 }
 
 async function _sendVerifyToken(user) {

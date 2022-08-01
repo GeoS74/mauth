@@ -1,8 +1,14 @@
-const { validate: uuidValidate } = require('uuid');
-
-module.exports.signup = async (ctx, next) => {
+module.exports.params = async (ctx, next) => {
   try {
-    _checkParams.call(null, ctx);
+    if (!_checkEmail(ctx.request.body.email)) {
+      ctx.throw(400, 'invalid email');
+    }
+    if (!_checkPassword(ctx.request.body.password)) {
+      ctx.throw(400, 'invalid password');
+    }
+    if (!_checkName(ctx.request.body.name)) {
+      ctx.throw(400, 'incorrect name');
+    }
   } catch (error) {
     ctx.status = error.status;
     ctx.body = {
@@ -13,22 +19,9 @@ module.exports.signup = async (ctx, next) => {
   await next();
 };
 
-module.exports.signin = async (ctx, next) => {
+module.exports.email = async (ctx, next) => {
   try {
-    _checkParams.call(null, ctx);
-  } catch (error) {
-    ctx.status = error.status;
-    ctx.body = {
-      error: error.message,
-    };
-    return;
-  }
-  await next();
-};
-
-module.exports.forgot = async (ctx, next) => {
-  try {
-    if(!_checkEmail(ctx.request.body.email)) {
+    if (!_checkEmail(ctx.request.body.email)) {
       ctx.throw(400, 'invalid email');
     }
   } catch (error) {
@@ -39,12 +32,12 @@ module.exports.forgot = async (ctx, next) => {
     return;
   }
   await next();
-}
+};
 
-module.exports.uuid = async (ctx, next) => {
+module.exports.password = async (ctx, next) => {
   try {
-    if (!uuidValidate(ctx.params.token)) {
-      ctx.throw(401, 'invalid token');
+    if (!_checkPassword(ctx.request.body.password)) {
+      ctx.throw(400, 'invalid password');
     }
   } catch (error) {
     ctx.status = error.status;
@@ -54,19 +47,7 @@ module.exports.uuid = async (ctx, next) => {
     return;
   }
   await next();
-}
-
-function _checkParams(ctx) {
-  if (!_checkEmail(ctx.request.body.email)) {
-    ctx.throw(400, 'invalid email');
-  }
-  if (!_checkPassword(ctx.request.body.password)) {
-    ctx.throw(400, 'invalid password');
-  }
-  if (!_checkName(ctx.request.body.name)) {
-    ctx.throw(400, 'incorrect name');
-  }
-}
+};
 
 function _checkEmail(email) {
   return /^[-.\w]+@([\w-]+\.)+[\w-]{2,12}$/.test(email);

@@ -1,7 +1,7 @@
 const { validate: uuidValidate } = require('uuid');
 const jwt = require('jsonwebtoken');
 
-const config = require('../../config')
+const config = require('../../config');
 
 module.exports.accessToken = async (ctx, next) => {
   try {
@@ -16,12 +16,13 @@ module.exports.accessToken = async (ctx, next) => {
     return;
   }
   await next();
-}
+};
 
-module.exports.refreshToken = (ctx, next) => {
+module.exports.refreshToken = async (ctx, next) => {
   try {
     const token = ctx.get('Authorization').split(' ')[1];
     _uuidValidate(token);
+    ctx.token = token;
   } catch (error) {
     ctx.status = 401;
     ctx.set('WWW-Authenticate', 'Bearer');
@@ -31,12 +32,13 @@ module.exports.refreshToken = (ctx, next) => {
     return;
   }
   await next();
-}
+};
 
-module.exports.confirmToken = (ctx, next) => {
+module.exports.confirmToken = async (ctx, next) => {
   try {
-    const token = ctx.params.token;
+    const { token } = ctx.params;
     _uuidValidate(token);
+    ctx.token = token;
   } catch (error) {
     ctx.status = 401;
     ctx.set('WWW-Authenticate', 'Bearer');
@@ -46,12 +48,13 @@ module.exports.confirmToken = (ctx, next) => {
     return;
   }
   await next();
-}
+};
 
-module.exports.forgotToken = (ctx, next) => {
+module.exports.forgotToken = async (ctx, next) => {
   try {
-    const token = ctx.params.token;
+    const { token } = ctx.params;
     _uuidValidate(token);
+    ctx.token = token;
   } catch (error) {
     ctx.status = 401;
     ctx.set('WWW-Authenticate', 'Bearer');
@@ -61,11 +64,11 @@ module.exports.forgotToken = (ctx, next) => {
     return;
   }
   await next();
-}
+};
 
 function _uuidValidate(token) {
   if (!uuidValidate(token)) {
-    new Error('invalid token');
+    throw new Error('invalid token');
   }
 }
 

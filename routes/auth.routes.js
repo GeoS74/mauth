@@ -1,62 +1,63 @@
 const Router = require('koa-router');
 const koaBody = require('koa-body');
 
-const auth = require('../controllers/auth.controller');
-const userValidator = require('../libs/validators/user.params.validator');
+const user = require('../controllers/user.controller');
 const session = require('../controllers/session.controller');
-const sessionValidator = require('../libs/validators/session.params.validator');
+const userValidator = require('../libs/validators/user.params.validator');
+const tokenValidator = require('../libs/validators/token.validator');
 
 const router = new Router({ prefix: '' });
 
 router.post(
   '/signup',
   koaBody(),
-  userValidator.signup,
-  auth.signup,
+  userValidator.params,
+  user.signup,
 );
 router.post(
   '/signin',
   koaBody(),
-  userValidator.signin,
-  auth.signin,
+  userValidator.params,
+  user.signin,
   session.start,
 );
 router.delete(
   '/signout',
-  koaBody(),
-  sessionValidator.refreshToken,
+  tokenValidator.refreshToken,
   session.destroy,
 );
 router.get(
   '/confirm/:token',
-  userValidator.uuid,
-  auth.confirm,
+  tokenValidator.confirmToken,
+  user.confirm,
 );
 router.get(
   '/access',
-  session.access,
+  tokenValidator.accessToken,
+  user.me,
 );
 router.get(
   '/refresh',
-  sessionValidator.refreshToken,
+  tokenValidator.refreshToken,
   session.refresh,
 );
 router.patch(
   '/forgot',
   koaBody(),
-  userValidator.forgot,
-  auth.forgot,
+  userValidator.email,
+  user.forgot,
 );
 router.get(
   '/forgot/:token',
-  userValidator.uuid,
-  auth.resetPassword,
+  tokenValidator.forgotToken,
+  user.resetPassword,
 );
 router.patch(
-  '/change/password',
+  '/password',
   koaBody(),
-  sessionValidator.accessToken,
-  auth.changepass,
+  tokenValidator.accessToken,
+  userValidator.password,
+  user.changepass,
 );
 
 module.exports = router.routes();
