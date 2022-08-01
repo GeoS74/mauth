@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const db = require('../libs/db');
 const userMapper = require('../mappers/user.mapper');
+const tokenMapper = require('../mappers/token.mapper');
 
 module.exports.start = async (ctx) => {
   try {
@@ -12,7 +13,7 @@ module.exports.start = async (ctx) => {
     await _createSession(ctx.user.id, tokens.refresh);
 
     ctx.status = 201;
-    ctx.body = tokens;
+    ctx.body = tokenMapper(tokens);
   } catch (error) {
     if (!error.status) {
       console.log(error);
@@ -53,7 +54,7 @@ module.exports.refresh = async (ctx) => {
     await _refreshSession(session.sid, tokens.refresh);
     
     ctx.status = 200;
-    ctx.body = tokens;
+    ctx.body = tokenMapper(tokens);
   } catch (error) {
     ctx.status = 401;
     ctx.set('WWW-Authenticate', 'Bearer');
