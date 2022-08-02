@@ -59,7 +59,7 @@ module.exports.confirm = async (ctx) => {
       ctx.throw(400, 'invalid verification token');
     }
 
-    const user = await _findUser(row.id);
+    const user = await _findUserById(row.id);
     if (!user) {
       ctx.throw(400, 'invalid verification token');
     }
@@ -133,7 +133,7 @@ module.exports.resetPassword = async (ctx) => {
 
 module.exports.changepass = async (ctx) => {
   try {
-    await _setNewPassword(ctx.user.id, ctx.request.body.password);
+    await _setNewPassword(ctx.user.email, ctx.request.body.password);
     ctx.status = 200;
     ctx.body = {
       message: 'password changed successfully',
@@ -152,11 +152,12 @@ module.exports.changepass = async (ctx) => {
 
 module.exports.me = async (ctx) => {
   try {
-    if (!ctx.user) {
+    const user = await _findUserByEmail(ctx.user.email);
+    if (!user) {
       ctx.throw(404, 'user not found');
     }
     ctx.status = 200;
-    ctx.body = mapper(ctx.user);
+    ctx.body = mapper(user);
   } catch (error) {
     ctx.status = error.status || 500;
     ctx.body = {
@@ -165,7 +166,7 @@ module.exports.me = async (ctx) => {
   }
 };
 
-async function _setNewPassword(userId, pass) {
+async function _setNewPassword(email, pass) {
   const salt = await password.salt();
   const passwordHash = await password.generate(pass, salt);
   return db.query(`UPDATE users
@@ -173,8 +174,8 @@ async function _setNewPassword(userId, pass) {
       passwordhash=$2,
       salt=$3,
       updatedat=DEFAULT
-    WHERE id=$1
-    `, [userId, passwordHash, salt]);
+    WHERE email=$1
+    `, [email, passwordHash, salt]);
 }
 
 async function _temporaryPassword(recoveryToken, tempPassword) {
@@ -202,7 +203,8 @@ async function _createUser(data) {
     verificationToken: uuid(),
     name: data.name || null,
   };
-  return db.query(`INSERT INTO users 
+  return db.query(
+    `INSERT INTO users 
       (${Object.keys(user).join(',')})
     VALUES 
       (${Object.keys(user).map((_, i) => `$${i + 1}`)})
@@ -229,8 +231,13 @@ async function _confirmAccount(token) {
     .then((res) => res.rows[0]);
 }
 
-async function _findUser(id) {
+async function _findUserById(id) {
   return db.query('SELECT * FROM users WHERE id=$1', [id])
+    .then((res) => res.rows[0]);
+}
+
+async function _findUserByEmail(email) {
+  return db.query('SELECT * FROM users WHERE email=$1', [email])
     .then((res) => res.rows[0]);
 }
 
@@ -261,7 +268,7 @@ async function _sendVerifyToken(user) {
     to: user.email,
     subject: 'Подтверждение email',
     template: 'confirmation',
-    locals: {host: config.server.domain, token: user.verificationtoken},
+    locals: { host: config.server.domain, token: user.verificationtoken },
   });
 }
 
@@ -270,7 +277,7 @@ async function _sendRecoveryToken(user) {
     to: user.email,
     subject: 'Восстановление пароля',
     template: 'recovery',
-    locals: {host: config.server.domain, token: user.recoverytoken},
+    locals: { host: config.server.domain, token: user.recoverytoken },
   });
 }
 
@@ -279,6 +286,6 @@ async function _sendTemporaryPassword(user, tempPassword) {
     to: user.email,
     subject: 'Временный пароль',
     template: 'change',
-    locals: {host: config.server.domain, password: tempPassword},
+    locals: { host: config.server.domain, password: tempPassword },
   });
 }

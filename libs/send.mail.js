@@ -17,7 +17,7 @@ const transport = nodemailer.createTransport({
 
 module.exports = async (options) => {
   const html = pug.renderFile(
-    path.join(__dirname, '../templates', options.template) + '.pug',
+    `${path.join(__dirname, '../templates', options.template)}.pug`,
     options.locals || {},
   );
 
@@ -27,4 +27,4 @@ module.exports = async (options) => {
     subject: options.subject,
     html,
   });
-}
+};
