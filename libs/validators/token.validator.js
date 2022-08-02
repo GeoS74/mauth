@@ -40,7 +40,7 @@ module.exports.confirmToken = async (ctx, next) => {
     _uuidValidate(token);
     ctx.token = token;
   } catch (error) {
-    ctx.status = 401;
+    ctx.status = 400;
     ctx.set('WWW-Authenticate', 'Bearer');
     ctx.body = {
       error: error.message,
@@ -56,7 +56,7 @@ module.exports.forgotToken = async (ctx, next) => {
     _uuidValidate(token);
     ctx.token = token;
   } catch (error) {
-    ctx.status = 401;
+    ctx.status = 400;
     ctx.set('WWW-Authenticate', 'Bearer');
     ctx.body = {
       error: error.message,
