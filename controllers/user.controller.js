@@ -108,7 +108,6 @@ module.exports.forgot = async (ctx) => {
 module.exports.resetPassword = async (ctx) => {
   try {
     const tempPassword = password.random();
-
     const user = await _temporaryPassword(ctx.token, tempPassword);
     if (!user) {
       ctx.throw(400, 'invalid recovery token');
@@ -157,7 +156,7 @@ module.exports.me = async (ctx) => {
       ctx.throw(404, 'user not found');
     }
     ctx.status = 200;
-    ctx.body = ctx.user;
+    ctx.body = mapper(ctx.user);
   } catch (error) {
     ctx.status = error.status || 500;
     ctx.body = {
@@ -188,7 +187,8 @@ async function _temporaryPassword(recoveryToken, tempPassword) {
       recoverytoken=NULL, 
       updatedat=DEFAULT
     WHERE recoverytoken=$1
-    RETURNING *`, [recoveryToken, passwordHash, salt])
+    RETURNING *
+    `, [recoveryToken, passwordHash, salt])
     .then((res) => res.rows[0]);
 }
 
@@ -202,8 +202,7 @@ async function _createUser(data) {
     verificationToken: uuid(),
     name: data.name || null,
   };
-  return db.query(
-    `INSERT INTO users 
+  return db.query(`INSERT INTO users 
       (${Object.keys(user).join(',')})
     VALUES 
       (${Object.keys(user).map((_, i) => `$${i + 1}`)})
@@ -222,40 +221,6 @@ async function _createRecoveryToken(email) {
     .then((res) => res.rows[0]);
 }
 
-async function _sendVerifyToken(user) {
-  return sendMail({
-    from: config.mailer.user,
-    to: user.email,
-    subject: 'Подтверждение email',
-    html: `Вы зарегестрировались на ${config.server.domain},
-    для подтверждения регистрации перейдите по ссылке:<br>
-    <a href="http://${config.server.domain}/confirm/${user.verificationtoken}">${config.server.domain}/confirm/${user.verificationtoken}</a>`,
-  });
-}
-
-async function _sendRecoveryToken(user) {
-  return sendMail({
-    from: config.mailer.user,
-    to: user.email,
-    subject: 'Восстановление пароля',
-    html: `Кто-то запросил сброс пароля на ${config.server.domain},
-    для подтверждения перейдите по ссылке:<br>
-    <a href="http://${config.server.domain}/forgot/${user.recoverytoken}">${config.server.domain}/forgot/${user.recoverytoken}</a>
-    <br>Если это не Вы, то проигнорируйте это письмо.`,
-  });
-}
-
-async function _sendTemporaryPassword(user, tempPassword) {
-  return sendMail({
-    from: config.mailer.user,
-    to: user.email,
-    subject: 'Временный пароль',
-    html: `Ваш пароль на ${config.server.domain} был изменён.<br>
-    Ваш новый пароль: ${tempPassword}<br>
-    `,
-  });
-}
-
 async function _confirmAccount(token) {
   return db.query(`UPDATE users 
       SET verificationtoken=NULL 
@@ -267,6 +232,13 @@ async function _confirmAccount(token) {
 async function _findUser(id) {
   return db.query('SELECT * FROM users WHERE id=$1', [id])
     .then((res) => res.rows[0]);
+}
+
+async function _delRecoveryToken(userId) {
+  return db.query(`UPDATE users 
+      SET recoverytoken=NULL, updatedat=DEFAULT
+      WHERE id=$1
+      `, [userId]);
 }
 
 async function _autenticateUser(ctx) {
@@ -284,9 +256,29 @@ async function _autenticateUser(ctx) {
   })(ctx);
 }
 
-async function _delRecoveryToken(userId) {
-  return db.query(`UPDATE users 
-      SET recoverytoken=NULL, updatedat=DEFAULT
-      WHERE id=$1
-      `, [userId]);
+async function _sendVerifyToken(user) {
+  return sendMail({
+    to: user.email,
+    subject: 'Подтверждение email',
+    template: 'confirmation',
+    locals: {host: config.server.domain, token: user.verificationtoken},
+  });
+}
+
+async function _sendRecoveryToken(user) {
+  return sendMail({
+    to: user.email,
+    subject: 'Восстановление пароля',
+    template: 'recovery',
+    locals: {host: config.server.domain, token: user.recoverytoken},
+  });
+}
+
+async function _sendTemporaryPassword(user, tempPassword) {
+  return sendMail({
+    to: user.email,
+    subject: 'Временный пароль',
+    template: 'change',
+    locals: {host: config.server.domain, password: tempPassword},
+  });
 }

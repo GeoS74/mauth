@@ -1,0 +1,14 @@
+doctype html
+html
+    head
+        meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+        title Подтверждение email
+        style.
+            .container { padding: 10px 50px; }
+
+            
+    body.container
+        h3 Подтверждение email
+        p Для завершения регистрации нажмите, пожалуйста, на ссылку
+        p
+            a(href=`http://${host}/confirm/` + token) Подтвердить регистрацию

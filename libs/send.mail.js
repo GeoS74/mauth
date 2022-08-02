@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+const pug = require('pug');
+const path = require('path');
 
 const config = require('../config');
 
@@ -13,10 +15,16 @@ const transport = nodemailer.createTransport({
   },
 });
 
-module.exports = async (mail) => transport.sendMail({
-  from: mail.from,
-  to: mail.to,
-  subject: mail.subject,
-  text: mail.text || '',
-  html: mail.html || '',
-});
+module.exports = async (options) => {
+  const html = pug.renderFile(
+    path.join(__dirname, '../templates', options.template) + '.pug',
+    options.locals || {},
+  );
+
+  return transport.sendMail({
+    from: config.mailer.user,
+    to: options.to,
+    subject: options.subject,
+    html,
+  });
+}
