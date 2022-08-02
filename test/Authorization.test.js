@@ -37,7 +37,7 @@ describe('/test/Authorization.test.js', () => {
       body: JSON.stringify({}),
     };
 
-    it('signup', async () => {
+    it('signup', async function test() {
       this.timeout(10000);
 
       let response = await fetch(`http://localhost:${config.server.port}/signup`, optional)
@@ -154,9 +154,9 @@ describe('/test/Authorization.test.js', () => {
       expect(sessionCount, 'signup удаляет сессию').equal(0);
     });
 
-    it('confirm', async () => {
+    it('confirm', async function test() {
       this.timeout(10000);
-      
+
       await db.query('DELETE FROM users');
       optional.method = 'POST';
       optional.body = JSON.stringify(user);
@@ -232,6 +232,35 @@ describe('/test/Authorization.test.js', () => {
       expectSigninMessage.call(this, response.data);
       expect(response.data.access, 'сервер обновляет access токен').not.equal(tokens.access);
       expect(response.data.refresh, 'сервер обновляет refresh токен').not.equal(tokens.refresh);
+    });
+
+    it('change password', async function test() {
+      optional.method = 'POST';
+      optional.body = JSON.stringify(user);
+      const tokens = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+        .then(async (res) => await res.json());
+
+      optional.method = 'PATCH';
+      optional.headers.Authorization = 'Bearer 123';
+      user.password = '54321';
+      optional.body = JSON.stringify(user);
+
+      let response = await fetch(`http://localhost:${config.server.port}/password`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 401);
+      expectErrorMessage.call(this, response.data);
+
+      optional.headers.Authorization = `Bearer ${tokens.access}`;
+      response = await fetch(`http://localhost:${config.server.port}/password`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 200);
+      expectInfoMessage.call(this, response.data);
+
+      optional.method = 'POST';
+      response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 201);
+      expectSigninMessage.call(this, response.data);
     });
 
     it('forgot', async function test() {
