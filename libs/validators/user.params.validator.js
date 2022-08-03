@@ -1,50 +1,26 @@
 module.exports.params = async (ctx, next) => {
-  try {
-    if (!_checkEmail(ctx.request.body.email)) {
-      ctx.throw(400, 'invalid email');
-    }
-    if (!_checkPassword(ctx.request.body.password)) {
-      ctx.throw(400, 'invalid password');
-    }
-    if (!_checkName(ctx.request.body.name)) {
-      ctx.throw(400, 'incorrect name');
-    }
-  } catch (error) {
-    ctx.status = error.status;
-    ctx.body = {
-      error: error.message,
-    };
-    return;
+  if (!_checkEmail(ctx.request.body.email)) {
+    ctx.throw(400, 'invalid email');
+  }
+  if (!_checkPassword(ctx.request.body.password)) {
+    ctx.throw(400, 'invalid password');
+  }
+  if (!_checkName(ctx.request.body.name)) {
+    ctx.throw(400, 'incorrect name');
   }
   await next();
 };
 
 module.exports.email = async (ctx, next) => {
-  try {
-    if (!_checkEmail(ctx.request.body.email)) {
-      ctx.throw(400, 'invalid email');
-    }
-  } catch (error) {
-    ctx.status = error.status;
-    ctx.body = {
-      error: error.message,
-    };
-    return;
+  if (!_checkEmail(ctx.request.body.email)) {
+    ctx.throw(400, 'invalid email');
   }
   await next();
 };
 
 module.exports.password = async (ctx, next) => {
-  try {
-    if (!_checkPassword(ctx.request.body.password)) {
-      ctx.throw(400, 'invalid password');
-    }
-  } catch (error) {
-    ctx.status = error.status;
-    ctx.body = {
-      error: error.message,
-    };
-    return;
+  if (!_checkPassword(ctx.request.body.password)) {
+    ctx.throw(400, 'invalid password');
   }
   await next();
 };

@@ -7,64 +7,35 @@ const userMapper = require('../mappers/user.mapper');
 const tokenMapper = require('../mappers/token.mapper');
 
 module.exports.start = async (ctx) => {
-  try {
-    const tokens = _generateTokens(userMapper(ctx.user));
-    await _checkMaxCountSessions(ctx.user.id);
-    await _createSession(ctx.user.id, tokens.refresh);
+  const tokens = _generateTokens(userMapper(ctx.user));
+  await _checkMaxCountSessions(ctx.user.id);
+  await _createSession(ctx.user.id, tokens.refresh);
 
-    ctx.status = 201;
-    ctx.body = tokenMapper(tokens);
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
-  }
+  ctx.status = 200;
+  ctx.body = tokenMapper(tokens);
 };
 
 module.exports.refresh = async (ctx) => {
-  try {
-    const session = await _findSession(ctx.token);
-    if (!session) {
-      throw new Error();
-    }
-
-    const tokens = _generateTokens(userMapper(session));
-    await _refreshSession(session.sid, tokens.refresh);
-
-    ctx.status = 200;
-    ctx.body = tokenMapper(tokens);
-  } catch (error) {
-    ctx.status = 401;
+  const session = await _findSession(ctx.token);
+  if (!session) {
     ctx.set('WWW-Authenticate', 'Bearer');
-    ctx.body = {
-      error: 'invalid token',
-    };
+    ctx.throw(401, 'invalid token');
   }
+
+  const tokens = _generateTokens(userMapper(session));
+  await _refreshSession(session.sid, tokens.refresh);
+
+  ctx.status = 200;
+  ctx.body = tokenMapper(tokens);
 };
 
 module.exports.destroy = async (ctx) => {
-  try {
-    await _destroySession(ctx.token);
+  await _destroySession(ctx.token);
 
-    ctx.status = 200;
-    ctx.body = {
-      message: 'session destroyed',
-    };
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
-  }
+  ctx.status = 200;
+  ctx.body = {
+    message: 'session destroyed',
+  };
 };
 
 function _generateTokens(user) {

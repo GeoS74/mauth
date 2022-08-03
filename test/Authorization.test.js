@@ -109,7 +109,7 @@ describe('/test/Authorization.test.js', () => {
 
       response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
         .then(result);
-      expectStatus.call(this, response.status, 201);
+      expectStatus.call(this, response.status, 200);
       expectSigninMessage.call(this, response.data);
 
       const token = await db.query(`SELECT token 
@@ -259,7 +259,7 @@ describe('/test/Authorization.test.js', () => {
       optional.method = 'POST';
       response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
         .then(result);
-      expectStatus.call(this, response.status, 201);
+      expectStatus.call(this, response.status, 200);
       expectSigninMessage.call(this, response.data);
     });
 

@@ -16,154 +16,79 @@ module.exports.signup = async (ctx) => {
     ctx.body = mapper(user);
   } catch (error) {
     if (error.code === '23505') { // unique_violation
-      ctx.status = 400;
-      ctx.body = {
-        error: 'email is not unique',
-      };
-      return;
+      ctx.throw(400, 'email is not unique');
     }
-
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
+    throw error;
   }
 };
 
 module.exports.signin = async (ctx, next) => {
-  try {
-    await _autenticateUser.call(null, ctx);
-    await _delRecoveryToken(ctx.user.id);
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
-    return;
-  }
+  await _autenticateUser.call(null, ctx);
+  await _delRecoveryToken(ctx.user.id);
   await next();
 };
 
 module.exports.confirm = async (ctx) => {
-  try {
-    const row = await _confirmAccount(ctx.token);
-    if (!row?.id) {
-      ctx.throw(400, 'invalid verification token');
-    }
-
-    const user = await _findUserById(row.id);
-    if (!user) {
-      ctx.throw(400, 'invalid verification token');
-    }
-
-    ctx.status = 200;
-    ctx.body = {
-      message: `you have successfully verified your ${user.email} email address`,
-    };
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
+  const row = await _confirmAccount(ctx.token);
+  if (!row?.id) {
+    ctx.throw(400, 'invalid verification token');
   }
+
+  const user = await _findUserById(row.id);
+  if (!user) {
+    ctx.throw(400, 'invalid verification token');
+  }
+
+  ctx.status = 200;
+  ctx.body = {
+    message: `you have successfully verified your ${user.email} email address`,
+  };
 };
 
 module.exports.forgot = async (ctx) => {
-  try {
-    const user = await _createRecoveryToken(ctx.request.body.email);
-    if (!user) {
-      ctx.throw(404, 'user not found');
-    }
-
-    await _sendRecoveryToken(user);
-
-    ctx.status = 200;
-    ctx.body = {
-      message: `password reset link has been sent to your ${user.email} email address`,
-    };
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
+  const user = await _createRecoveryToken(ctx.request.body.email);
+  if (!user) {
+    ctx.throw(404, 'user not found');
   }
+
+  await _sendRecoveryToken(user);
+
+  ctx.status = 200;
+  ctx.body = {
+    message: `password reset link has been sent to your ${user.email} email address`,
+  };
 };
 
 module.exports.resetPassword = async (ctx) => {
-  try {
-    const tempPassword = password.random();
-    const user = await _temporaryPassword(ctx.token, tempPassword);
-    if (!user) {
-      ctx.throw(400, 'invalid recovery token');
-    }
-
-    await _sendTemporaryPassword(user, tempPassword);
-
-    ctx.status = 200;
-    ctx.body = {
-      message: `you have successfully reset your password. A new login password sent to ${user.email}`,
-    };
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
+  const tempPassword = password.random();
+  const user = await _temporaryPassword(ctx.token, tempPassword);
+  if (!user) {
+    ctx.throw(400, 'invalid recovery token');
   }
+
+  await _sendTemporaryPassword(user, tempPassword);
+
+  ctx.status = 200;
+  ctx.body = {
+    message: `you have successfully reset your password. A new login password sent to ${user.email}`,
+  };
 };
 
 module.exports.changepass = async (ctx) => {
-  try {
-    await _setNewPassword(ctx.user.email, ctx.request.body.password);
-    ctx.status = 200;
-    ctx.body = {
-      message: 'password changed successfully',
-    };
-  } catch (error) {
-    if (!error.status) {
-      console.log(error);
-    }
-
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
-  }
+  await _setNewPassword(ctx.user.email, ctx.request.body.password);
+  ctx.status = 200;
+  ctx.body = {
+    message: 'password changed successfully',
+  };
 };
 
 module.exports.me = async (ctx) => {
-  try {
-    const user = await _findUserByEmail(ctx.user.email);
-    if (!user) {
-      ctx.throw(404, 'user not found');
-    }
-    ctx.status = 200;
-    ctx.body = mapper(user);
-  } catch (error) {
-    ctx.status = error.status || 500;
-    ctx.body = {
-      error: error.message,
-    };
+  const user = await _findUserByEmail(ctx.user.email);
+  if (!user) {
+    ctx.throw(404, 'user not found');
   }
+  ctx.status = 200;
+  ctx.body = mapper(user);
 };
 
 async function _setNewPassword(email, pass) {

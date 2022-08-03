@@ -8,12 +8,8 @@ module.exports.accessToken = async (ctx, next) => {
     const token = ctx.get('Authorization').split(' ')[1];
     ctx.user = _jwtDecode(token).user;
   } catch (error) {
-    ctx.status = 401;
     ctx.set('WWW-Authenticate', 'Bearer');
-    ctx.body = {
-      error: 'invalid access token',
-    };
-    return;
+    ctx.throw(401, 'invalid access token');
   }
   await next();
 };
@@ -24,12 +20,8 @@ module.exports.refreshToken = async (ctx, next) => {
     _uuidValidate(token);
     ctx.token = token;
   } catch (error) {
-    ctx.status = 401;
     ctx.set('WWW-Authenticate', 'Bearer');
-    ctx.body = {
-      error: error.message,
-    };
-    return;
+    ctx.throw(401, 'invalid token');
   }
   await next();
 };
@@ -40,12 +32,8 @@ module.exports.confirmToken = async (ctx, next) => {
     _uuidValidate(token);
     ctx.token = token;
   } catch (error) {
-    ctx.status = 400;
     ctx.set('WWW-Authenticate', 'Bearer');
-    ctx.body = {
-      error: error.message,
-    };
-    return;
+    ctx.throw(400, 'invalid token');
   }
   await next();
 };
@@ -56,12 +44,8 @@ module.exports.forgotToken = async (ctx, next) => {
     _uuidValidate(token);
     ctx.token = token;
   } catch (error) {
-    ctx.status = 400;
     ctx.set('WWW-Authenticate', 'Bearer');
-    ctx.body = {
-      error: error.message,
-    };
-    return;
+    ctx.throw(400, 'invalid token');
   }
   await next();
 };

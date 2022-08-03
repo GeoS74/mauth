@@ -13,23 +13,20 @@ const logger = bunyan.createLogger({
 
 module.exports = async (ctx, next) => {
   try {
-    console.log('start app');
     await next();
-    console.log('end app');
   } catch (error) {
-    console.log('catch app');
     if (error.status) {
       ctx.status = error.status;
       ctx.body = {
         error: error.message,
-      }
+      };
       return;
     }
 
-    logger.info(error)
+    logger.info(error);
     ctx.status = 500;
     ctx.body = {
-      error: '~internal server error~',
-    }
+      error: 'internal server error',
+    };
   }
-}
+};
