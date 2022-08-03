@@ -24,6 +24,7 @@
     "mocha": "^10.0.0"
   },
   "dependencies": {
+    "bunyan": "^1.8.15",
     "dotenv": "^16.0.1",
     "generate-password": "^1.7.0",
     "jsonwebtoken": "^8.5.1",
