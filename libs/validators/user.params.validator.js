@@ -1,32 +1,4 @@
-module.exports.signup = async (ctx, next) => {
-  try {
-    _checkParams.call(null, ctx);
-    await next();
-  } catch (error) {
-    ctx.status = error.status;
-    ctx.body = {
-      error: error.message,
-    };
-  }
-};
-
-module.exports.signin = async (ctx, next) => {
-  try {
-    _checkParams.call(null, ctx);
-    await next();
-  } catch (error) {
-    ctx.status = error.status;
-    ctx.body = {
-      error: error.message,
-    };
-  }
-};
-
-module.exports.signout = async (ctx, next) => {
-  await next();
-};
-
-function _checkParams(ctx) {
+module.exports.params = async (ctx, next) => {
   if (!_checkEmail(ctx.request.body.email)) {
     ctx.throw(400, 'invalid email');
   }
@@ -36,7 +8,22 @@ function _checkParams(ctx) {
   if (!_checkName(ctx.request.body.name)) {
     ctx.throw(400, 'incorrect name');
   }
-}
+  await next();
+};
+
+module.exports.email = async (ctx, next) => {
+  if (!_checkEmail(ctx.request.body.email)) {
+    ctx.throw(400, 'invalid email');
+  }
+  await next();
+};
+
+module.exports.password = async (ctx, next) => {
+  if (!_checkPassword(ctx.request.body.password)) {
+    ctx.throw(400, 'invalid password');
+  }
+  await next();
+};
 
 function _checkEmail(email) {
   return /^[-.\w]+@([\w-]+\.)+[\w-]{2,12}$/.test(email);
