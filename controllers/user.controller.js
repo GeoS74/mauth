@@ -9,8 +9,9 @@ const passport = require('../libs/passport');
 
 module.exports.signup = async (ctx) => {
   try {
-    const user = await _createUser(ctx.request.body);
-    await _sendVerifyToken(user);
+    const data = ctx.request.body;
+    const user = await _createUser(data.email, data.password, data.name);
+    await _sendVerifyToken(user.email, user.verificationtoken);
 
     ctx.status = 201;
     ctx.body = mapper(user);
@@ -51,7 +52,7 @@ module.exports.forgot = async (ctx) => {
     ctx.throw(404, 'user not found');
   }
 
-  await _sendRecoveryToken(user);
+  await _sendRecoveryToken(user.email, user.recoverytoken);
 
   ctx.status = 200;
   ctx.body = {
@@ -66,7 +67,7 @@ module.exports.resetPassword = async (ctx) => {
     ctx.throw(400, 'invalid recovery token');
   }
 
-  await _sendTemporaryPassword(user, tempPassword);
+  await _sendTemporaryPassword(user.email, tempPassword);
 
   ctx.status = 200;
   ctx.body = {
@@ -118,15 +119,15 @@ async function _temporaryPassword(recoveryToken, tempPassword) {
     .then((res) => res.rows[0]);
 }
 
-async function _createUser(data) {
+async function _createUser(email, pass, name) {
   const salt = await password.salt();
-  const passwordHash = await password.generate(data.password, salt);
+  const passwordHash = await password.generate(pass, salt);
   const user = {
-    email: data.email,
+    email,
     passwordHash,
     salt,
     verificationToken: uuid(),
-    name: data.name || null,
+    name: name || null,
   };
   return db.query(
     `INSERT INTO users 
@@ -188,27 +189,27 @@ async function _autenticateUser(ctx) {
   })(ctx);
 }
 
-async function _sendVerifyToken(user) {
+async function _sendVerifyToken(to, verificationtoken) {
   return sendMail({
-    to: user.email,
+    to,
     subject: 'Подтверждение email',
     template: 'confirmation',
-    locals: { host: config.server.domain, token: user.verificationtoken },
+    locals: { host: config.server.domain, token: verificationtoken },
   });
 }
 
-async function _sendRecoveryToken(user) {
+async function _sendRecoveryToken(to, recoverytoken) {
   return sendMail({
-    to: user.email,
+    to,
     subject: 'Восстановление пароля',
     template: 'recovery',
-    locals: { host: config.server.domain, token: user.recoverytoken },
+    locals: { host: config.server.domain, token: recoverytoken },
   });
 }
 
-async function _sendTemporaryPassword(user, tempPassword) {
+async function _sendTemporaryPassword(to, tempPassword) {
   return sendMail({
-    to: user.email,
+    to,
     subject: 'Временный пароль',
     template: 'change',
     locals: { host: config.server.domain, password: tempPassword },
