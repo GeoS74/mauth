@@ -1,10 +1,11 @@
 const config = require('./config');
 const app = require('./app');
+const logger = require('./libs/logger');
 
 app.listen(config.server.port, (error) => {
   if (error) {
-    console.log(error.message);
+    logger.error(error.message);
     return;
   }
-  console.log(`server run http://${config.server.host}:${config.server.port}`);
+  logger.info(`server run http://${config.server.host}:${config.server.port}`);
 });

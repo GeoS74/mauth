@@ -11,7 +11,7 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
-    'no-console': 'off',
+    'no-console': 1,
     'linebreak-style': 1,
     'no-template-curly-in-string': 'off',
     'no-underscore-dangle': 'off',
@@ -20,5 +20,5 @@ module.exports = {
     'no-await-in-loop': 'off',
     'no-param-reassign': 'off',
   },
-  ignorePatterns: ['*.test.js', '/files/*'],
+  ignorePatterns: ['*.test.js', '/client/*'],
 };

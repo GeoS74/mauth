@@ -1,0 +1,15 @@
+doctype html
+html
+    head
+        meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+        title Восстановление пароля
+        style.
+            .container { padding: 10px 50px; }
+
+            
+    body.container
+        h3 Восстановление пароля
+        p Кто-то запросил сброс пароля на #{host}, для подтверждения перейдите по ссылке:
+        p
+            a(href=`http://${host}/forgot/` + token) Восстановить пароль
+        p Если это не Вы, то проигнорируйте это письмо
