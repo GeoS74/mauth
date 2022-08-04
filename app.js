@@ -1,11 +1,11 @@
 const Koa = require('koa');
 
 const authRoutes = require('./routes/auth.routes');
-const logger = require('./libs/logger');
+const errorInterceptor = require('./middleware/error.interceptor');
 
 const app = new Koa();
 
-app.use(logger);
+app.use(errorInterceptor);
 app.use(authRoutes);
 
 module.exports = app;

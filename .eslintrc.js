@@ -11,7 +11,7 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
-    'no-console': 'off',
+    'no-console': 1,
     'linebreak-style': 1,
     'no-template-curly-in-string': 'off',
     'no-underscore-dangle': 'off',
