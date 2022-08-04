@@ -37,4 +37,7 @@ module.exports = {
   verification: {
     ttl: '10 minute',
   },
+  log: {
+    file: 'app.log',
+  },
 };

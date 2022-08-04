@@ -1,5 +1,5 @@
 const Router = require('koa-router');
-const koaBody = require('koa-body');
+const koaBody = require('koa-body')({ multipart: true });
 
 const user = require('../controllers/user.controller');
 const session = require('../controllers/session.controller');
@@ -10,13 +10,13 @@ const router = new Router({ prefix: '' });
 
 router.post(
   '/signup',
-  koaBody(),
+  koaBody,
   userValidator.params,
   user.signup,
 );
 router.post(
   '/signin',
-  koaBody(),
+  koaBody,
   userValidator.params,
   user.signin,
   session.start,
@@ -43,7 +43,7 @@ router.get(
 );
 router.patch(
   '/forgot',
-  koaBody(),
+  koaBody,
   userValidator.email,
   user.forgot,
 );
@@ -54,7 +54,7 @@ router.get(
 );
 router.patch(
   '/password',
-  koaBody(),
+  koaBody,
   tokenValidator.accessToken,
   userValidator.password,
   user.changepass,

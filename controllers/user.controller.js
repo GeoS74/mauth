@@ -3,9 +3,9 @@ const { v4: uuid } = require('uuid');
 const config = require('../config');
 const db = require('../libs/db');
 const password = require('../libs/password');
-const mapper = require('../mappers/user.mapper');
-const sendMail = require('../libs/send.mail');
 const passport = require('../libs/passport');
+const sendMail = require('../libs/send.mail');
+const mapper = require('../mappers/user.mapper');
 
 module.exports.signup = async (ctx) => {
   try {

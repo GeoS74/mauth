@@ -24,7 +24,6 @@
     "mocha": "^10.0.0"
   },
   "dependencies": {
-    "bunyan": "^1.8.15",
     "dotenv": "^16.0.1",
     "generate-password": "^1.7.0",
     "jsonwebtoken": "^8.5.1",
@@ -32,6 +31,7 @@
     "koa-body": "^5.0.0",
     "koa-passport": "^5.0.0",
     "koa-router": "^12.0.0",
+    "log4js": "^6.6.1",
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.7",
     "passport-local": "^1.0.0",

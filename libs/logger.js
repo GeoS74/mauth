@@ -1,15 +1,25 @@
-const bunyan = require('bunyan');
+const log4js = require('log4js');
 const path = require('path');
 
-const logger = bunyan.createLogger({
-  name: 'logger',
-  streams: [{
-    path: path.join(__dirname, '../log/mauth.log'),
-  }, {
-    stream: process.stdout,
-  }],
-  // src: true,
+const config = require('../config');
+
+log4js.configure({
+  appenders: {
+    out: { type: 'stdout' },
+    app: {
+      type: 'file',
+      filename: path.join(__dirname, `../log/${config.log.file}`),
+    },
+  },
+  categories: {
+    default: {
+      appenders: ['out', 'app'],
+      level: 'all',
+    },
+  },
 });
+
+const logger = log4js.getLogger();
 
 module.exports = async (ctx, next) => {
   try {
@@ -23,7 +33,7 @@ module.exports = async (ctx, next) => {
       return;
     }
 
-    logger.info(error);
+    logger.error(error.message);
     ctx.status = 500;
     ctx.body = {
       error: 'internal server error',
