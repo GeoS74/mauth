@@ -6,15 +6,26 @@ import { useState } from "react";
 
 export const Regform = () => {
   const [valueEyeSlash, setValueEyeSlash] = useState(0);
-
   const [valueType, setValueType] = useState(0);
+
+  const url = `http://localhost:3001`;
+  async function aaa() {
+    let response = await fetch(url, { mode: `no-cors` });
+
+    // if (response.ok) {
+    //   let json = await response.text();
+    //   console.log(json);
+    // } else {
+    //   alert("Ошибка HTTP: " + response.status);
+    // }
+  }
 
   const dateForm = {
     typeInput1: "Password",
     typeInput2: "Text",
     namebutton1: "Sign in",
     namebutton2: "Create an account",
-    namebutton3: "Reset password",
+    nodenamebutton3: "Reset password",
     nameP1: "Not registered?",
     nameP2: "Already have an account?",
     nameLink1: "Create an account",
@@ -82,7 +93,7 @@ export const Regform = () => {
         </div>
         <button
           className={classNames(styles.foo)}
-          onClick={() => console.log(valueType)}
+          onClick={() => aaa(`signin`)}
         >
           {valueType === 0
             ? dateForm.namebutton1
