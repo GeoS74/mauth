@@ -3,8 +3,8 @@ const koaBody = require('koa-body')({ multipart: true });
 
 const user = require('../controllers/user.controller');
 const session = require('../controllers/session.controller');
-const userValidator = require('../libs/validators/user.params.validator');
-const tokenValidator = require('../libs/validators/token.validator');
+const userValidator = require('../middleware/validators/user.params.validator');
+const tokenValidator = require('../middleware/validators/token.validator');
 
 const router = new Router({ prefix: '' });
 

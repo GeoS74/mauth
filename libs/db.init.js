@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 
 const config = require('../config');
+const logger = require('./logger');
 
 const data = {
   user: config.postgres.user,
@@ -14,8 +15,8 @@ const data = {
   let pool = new Pool(data);
 
   await pool.query(`CREATE DATABASE ${config.postgres.database}`)
-    .then(() => console.log(`create database "${config.postgres.database}"`))
-    .catch((error) => console.log(error.message));
+    .then(() => logger.info(`create database "${config.postgres.database}"`))
+    .catch((error) => logger.warn(error.message));
 
   // connect new database
   data.database = config.postgres.database;
@@ -36,8 +37,8 @@ const data = {
       updatedat timestamp DEFAULT NOW()
     );
   `)
-    .then(() => console.log('create table "users"'))
-    .catch((error) => console.log(error.message));
+    .then(() => logger.info('create table "users"'))
+    .catch((error) => logger.warn(error.message));
 
   await pool.query(`
     CREATE OR REPLACE FUNCTION expire_del_old_rows() RETURNS trigger
@@ -57,8 +58,8 @@ const data = {
       AFTER INSERT OR UPDATE OF verificationtoken ON users
       EXECUTE PROCEDURE expire_del_old_rows();
   `)
-    .then(() => console.log('create trigger "expire_del_old_rows_trigger"'))
-    .catch((error) => console.log(error.message));
+    .then(() => logger.info('create trigger "expire_del_old_rows_trigger"'))
+    .catch((error) => logger.warn(error.message));
 
   await pool.query(`
     CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -69,8 +70,8 @@ const data = {
       lastvisit timestamp DEFAULT NOW()
     );
   `)
-    .then(() => console.log('create table "sessions"'))
-    .catch((error) => console.log(error.message));
+    .then(() => logger.info('create table "sessions"'))
+    .catch((error) => logger.warn(error.message));
 
   await pool.query(`
     CREATE OR REPLACE FUNCTION expire_del_old_sessions() RETURNS trigger
@@ -86,9 +87,9 @@ const data = {
       AFTER INSERT OR UPDATE ON sessions
       EXECUTE PROCEDURE expire_del_old_sessions();
   `)
-    .then(() => console.log('create trigger "expire_del_old_sessions_trigger"'))
-    .catch((error) => console.log(error.message));
+    .then(() => logger.info('create trigger "expire_del_old_sessions_trigger"'))
+    .catch((error) => logger.warn(error.message));
 
-  console.log('database init complete');
+  logger.info('database init complete');
   process.exit();
 })();
