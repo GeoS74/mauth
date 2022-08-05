@@ -1,4 +1,4 @@
-const logger = require('../libs/logger');
+const logger = require('../libs/logger')('interceptor');
 
 module.exports = async (ctx, next) => {
   try {

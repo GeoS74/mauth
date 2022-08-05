@@ -1,6 +1,6 @@
 const config = require('./config');
 const app = require('./app');
-const logger = require('./libs/logger');
+const logger = require('./libs/logger')('app say');
 
 app.listen(config.server.port, (error) => {
   if (error) {
