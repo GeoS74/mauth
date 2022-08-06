@@ -1,0 +1,142 @@
+.root {
+  background-color: rgba(110, 110, 110, 0.5);
+  padding: 1px;
+}
+
+.hidden {
+  display: none!important;
+}
+
+.border {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  background-color: rgb(248, 248, 250);
+  width: 404px;
+  height: 304px;
+  border: 1px solid rgb(38, 128, 226);
+  font-size: 15px;
+}
+
+.borderReg {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  background-color: rgb(248, 248, 250);
+  width: 404px;
+  height: 354px;
+  border: 1px solid rgb(38, 128, 226);
+  font-size: 15px;
+}
+
+.borderForgot {
+  display: flex;
+  flex-direction: column;
+  justify-content:space-evenly;
+  align-items: stretch;
+  background-color: rgb(248, 248, 250);
+  width: 404px;
+  height: 180px;
+  border: 1px solid rgb(38, 128, 226);
+  font-size: 15px;
+}
+
+.border input, .borderReg input, .borderForgot input {
+  margin-top: 7px;
+  height: 30px;
+  padding-left: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.border button, .borderReg button, .borderForgot button {
+  background-color: rgb(38, 128, 226);
+  height: 36px;
+  color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.border p, .borderReg p, .borderForgot p {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.foo {
+  margin: 7px 30px;
+}
+
+.email {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.pass {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.paslink {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.passButton {
+  background: none!important;
+  border: none!important;
+  padding: 0!important;
+    /*optional*/
+  font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+  color: #069!important;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.password {
+  display: flex;
+  position: relative;
+}
+
+.password input {
+  width: 100%;
+}
+
+.password button {  
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  display: inline-block;
+  width: 40px;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0;
+}
+
+.name {  
+  display: flex;
+  flex-direction: column;
+}
+
+.pandlink {
+  display: flex;
+  justify-content: center;  
+  margin: 0;
+}
+
+.pandlink button {
+  margin-left: 5px;
+  background: none!important;
+  border: none!important;
+  padding: 0!important;
+    /*optional*/
+  font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+  color: #069!important;
+  text-decoration: underline;
+  cursor: pointer;
+}
