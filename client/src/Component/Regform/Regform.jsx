@@ -2,9 +2,10 @@ import React from "react";
 import styles from "./styles.module.css";
 import classNames from "classnames";
 import { useState } from "react";
-import { EmailForm } from "../Form/EmailForm/EmailForm";
-import { PasswordForm } from "../Form/PasswordForm/PasswordForm";
-import { ButtonForm } from "../Form/ButtonForm/ButtonForm";
+import { Email } from "../Form/Email/Email";
+import { Password } from "../Form/Password/Password";
+import { Button } from "../Form/Button/Button";
+import { LabelForgot } from "../Form/LabelForgot/LabelForgot";
 
 export const Regform = () => {
   const [valueType, setValueType] = useState(0);
@@ -18,9 +19,10 @@ export const Regform = () => {
           { [styles.borderForgot]: valueType === 2 }
         )}
       >
-        <EmailForm />
-        <PasswordForm valueType={valueType} setValueType={setValueType} />
-        <ButtonForm valueType={valueType} setValueType={setValueType} />
+        <Email />
+        <LabelForgot valueType={valueType} setValueType={setValueType} />
+        <Password valueType={valueType} setValueType={setValueType} />
+        <Button valueType={valueType} setValueType={setValueType} />
       </div>
     </div>
   );

@@ -1,10 +1,8 @@
-import classNames from "classnames";
 import React from "react";
-import styles from "./styles.module.css";
 
 export const Eye = ({ valueSlash }) => {
   switch (valueSlash) {
-    case 1:
+    case "NotSlash":
       return (
         <svg
           // открытый глаз

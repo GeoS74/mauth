@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./styles.module.css";
 import classNames from "classnames";
 
-export const ButtonForm = ({ valueType, setValueType }) => {
+export const Button = ({ valueType, setValueType }) => {
   const url = `http://localhost:3001`;
   async function aaa() {
     let response = await fetch(url, { mode: `no-cors` });
@@ -28,7 +28,10 @@ export const ButtonForm = ({ valueType, setValueType }) => {
         <label htmlFor="YourName">Your name - optional</label>
         <input type="text" id="YourName" name="yourName" placeholder="name" />
       </div>
-      <button className={classNames(styles.foo)} onClick={() => aaa(`signin`)}>
+      <button
+        className={classNames(styles.foo)}
+        onClick={() => console.log("sdfs")}
+      >
         {valueType === 0
           ? dateForm.namebutton1
           : valueType === 2
