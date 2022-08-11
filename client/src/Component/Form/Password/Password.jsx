@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { useState } from "react";
 import { Eye } from "../Eye/Eye";
 
-export const Password = ({ valueType, setValueType }) => {
+export const Password = ({ valueType }) => {
   const [valueEyeSlash, setValueEyeSlash] = useState("Slash");
 
   const eyeSlash = () => {
@@ -23,7 +23,7 @@ export const Password = ({ valueType, setValueType }) => {
   return (
     <div
       className={classNames(styles.foo, styles.pass, {
-        [styles.hidden]: valueType === 2,
+        [styles.hidden]: valueType === "Forgot",
       })}
     >
       <div className={styles.password}>
@@ -37,7 +37,7 @@ export const Password = ({ valueType, setValueType }) => {
           }
           placeholder="password"
         />
-        <button onClick={() => eyeSlash(valueEyeSlash, setValueEyeSlash)}>
+        <button onClick={() => eyeSlash()}>
           <Eye valueSlash={valueEyeSlash} />
         </button>
       </div>
