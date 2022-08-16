@@ -7,13 +7,13 @@ export const YourName = ({ valueType }) => {
     <div>
       <div
         className={classNames(
-          { [styles.name]: valueType === "CreateAccount" },
-          { [styles.hidden]: valueType !== "CreateAccount" },
+          { [styles.name]: valueType === "signup" },
+          { [styles.hidden]: valueType !== "signup" },
           styles.foo
         )}
       >
         <label htmlFor="YourName">Your name - optional</label>
-        <input type="text" id="YourName" name="yourName" placeholder="name" />
+        <input type="text" id="YourName" name="name" placeholder="name" />
       </div>
     </div>
   );

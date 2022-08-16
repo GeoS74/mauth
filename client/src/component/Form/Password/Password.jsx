@@ -23,13 +23,13 @@ export const Password = ({ valueType }) => {
   return (
     <div
       className={classNames(styles.foo, styles.pass, {
-        [styles.hidden]: valueType === "Forgot",
+        [styles.hidden]: valueType === "forgot",
       })}
     >
       <div className={styles.password}>
         <input
           id="Password"
-          name="passw"
+          name="password"
           type={
             valueEyeSlash === "Slash"
               ? dateForm.typePassword
@@ -37,7 +37,7 @@ export const Password = ({ valueType }) => {
           }
           placeholder="password"
         />
-        <button onClick={() => eyeSlash()}>
+        <button onClick={eyeSlash}>
           <Eye valueSlash={valueEyeSlash} />
         </button>
       </div>

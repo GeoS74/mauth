@@ -6,16 +6,16 @@ export const LabelForgot = ({ valueType, setValueType }) => {
   return (
     <div
       className={classNames(styles.foo, styles.pass, {
-        [styles.hidden]: valueType === "Forgot",
+        [styles.hidden]: valueType === "forgot",
       })}
     >
       <div className={styles.paslink}>
         <label htmlFor="Password">Password</label>
         <button
           className={classNames(styles.passButton, {
-            [styles.hidden]: valueType === "Forgot",
+            [styles.hidden]: valueType === "forgot",
           })}
-          onClick={() => setValueType("Forgot")}
+          onClick={() => setValueType("forgot")}
         >
           Forgot password?
         </button>
