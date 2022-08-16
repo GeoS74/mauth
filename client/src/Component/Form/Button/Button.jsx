@@ -5,10 +5,18 @@ import classNames from "classnames";
 export const Button = ({ valueType }) => {
   const url = `http://localhost:3001`;
   async function aaa() {
-    let response = await fetch(url + "/signin", {
-      method: `POST`,
-      mode: `no-cors`,
-    });
+    if (valueType === "SignIn") {
+      let response = await fetch(url + "/signin", {
+        method: `POST`,
+        mode: `no-cors`,
+      });
+      console.log(response);
+    }
+    // } else if (valueType === "CreateAccount") {
+    //   console.log(2);
+    // } else if (valueType === "Forgot") {
+    //   console.log(3);
+    // }
   }
   const dateForm = {
     sign_in: "Sign in",
@@ -17,16 +25,6 @@ export const Button = ({ valueType }) => {
   };
   return (
     <div>
-      <div
-        className={classNames(
-          { [styles.name]: valueType === "CreateAccount" },
-          { [styles.hidden]: valueType !== "CreateAccount" },
-          styles.foo
-        )}
-      >
-        <label htmlFor="YourName">Your name - optional</label>
-        <input type="text" id="YourName" name="yourName" placeholder="name" />
-      </div>
       <button className={classNames(styles.foo)} onClick={() => aaa()}>
         {valueType === "SignIn"
           ? dateForm.sign_in

@@ -15,7 +15,7 @@ export const LabelForgot = ({ valueType, setValueType }) => {
           className={classNames(styles.passButton, {
             [styles.hidden]: valueType === "Forgot",
           })}
-          onClick={() => setValueType("Forgot", console.log(valueType))}
+          onClick={() => setValueType("Forgot")}
         >
           Forgot password?
         </button>

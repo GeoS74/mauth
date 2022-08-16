@@ -7,13 +7,16 @@ import { Password } from "../Password/Password";
 import { Button } from "../Button/Button";
 import { LabelForgot } from "../LabelForgot/LabelForgot";
 import { Footer } from "../Footer/Footer";
+import { YourName } from "../YourName/YourName";
 
 export const Regform = () => {
   const [valueType, setValueType] = useState("SignIn");
 
   return (
     <div className={classNames(styles.root)}>
-      <div
+      <form
+        action="#"
+        method="GET"
         className={classNames(
           { [styles.border]: valueType === "SignIn" },
           { [styles.borderReg]: valueType === "CreateAccount" },
@@ -23,9 +26,10 @@ export const Regform = () => {
         <Email />
         <LabelForgot valueType={valueType} setValueType={setValueType} />
         <Password valueType={valueType} />
+        <YourName valueType={valueType} />
         <Button valueType={valueType} />
         <Footer valueType={valueType} setValueType={setValueType} />
-      </div>
+      </form>
     </div>
   );
 };
