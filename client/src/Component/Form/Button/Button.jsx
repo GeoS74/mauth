@@ -10,7 +10,6 @@ export const Button = ({ valueType }) => {
         method: `POST`,
         mode: `no-cors`,
       });
-      console.log(response);
     }
     // } else if (valueType === "CreateAccount") {
     //   console.log(2);
