@@ -37,9 +37,9 @@ export const Password = ({ valueType }) => {
           }
           placeholder="password"
         />
-        <button onClick={eyeSlash}>
+        <p onClick={eyeSlash}>
           <Eye valueSlash={valueEyeSlash} />
-        </button>
+        </p>
       </div>
     </div>
   );

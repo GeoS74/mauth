@@ -11,14 +11,17 @@ export const LabelForgot = ({ valueType, setValueType }) => {
     >
       <div className={styles.paslink}>
         <label htmlFor="Password">Password</label>
-        <button
+        <p
           className={classNames(styles.passButton, {
             [styles.hidden]: valueType === "forgot",
           })}
-          onClick={() => setValueType("forgot")}
+          onClick={(event) => {
+            console.log(event.target.keypress(e => console.log(e.keyCode)))
+            setValueType("forgot")
+          }}
         >
           Forgot password?
-        </button>
+        </p>
       </div>
     </div>
   );
