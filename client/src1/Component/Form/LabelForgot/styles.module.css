@@ -5,7 +5,7 @@
 }
 
 .foo {
-  margin: 0px 30px 10px 30px;
+  margin: 10px 30px 0 30px;
 }
 
 .pass {
@@ -31,24 +31,4 @@
   color: #069!important;
   text-decoration: underline;
   cursor: pointer;
-}
-
-.password {
-  display: flex;
-  position: relative;
-}
-
-.password input {
-  width: 100%;
-}
-
-.password p {  
-  position: absolute;
-  top: 10px;
-  right: 0px;
-  display: inline-block;
-  width: 40px;
-  height: 30px;
-  background-color: rgba(0, 0, 0, 0);
-  border: 0;
 }

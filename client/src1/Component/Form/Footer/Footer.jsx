@@ -4,10 +4,10 @@ import classNames from "classnames";
 
 export const Footer = ({ valueType, setValueType }) => {
   const button = () => {
-    if (valueType === "signin") {
-      setValueType("signup");
+    if (valueType === "SignIn") {
+      setValueType("CreateAccount");
     } else {
-      setValueType("signin");
+      setValueType("SignIn");
     }
   };
 
@@ -15,19 +15,16 @@ export const Footer = ({ valueType, setValueType }) => {
     notReg: "Not registered?",
     already: "Already have an account?",
     nameLink1: "Create an account",
-    signin: "Sign in",
+    sign_in: "Sign in",
   };
 
   return (
     <div>
       <div className={classNames(styles.foo, styles.pandlink)}>
         <p>
-          {valueType === "signin" ? dateForm.notReg : dateForm.already}
-          <button onClick={event => {
-            event.preventDefault();
-            setValueType(valueType === 'signin' ? 'signup' : 'signin');
-            }}>
-            {valueType === "signin" ? dateForm.nameLink1 : dateForm.signin}
+          {valueType === "SignIn" ? dateForm.notReg : dateForm.already}
+          <button onClick={() => button()}>
+            {valueType === "SignIn" ? dateForm.nameLink1 : dateForm.sign_in}
           </button>
         </p>
       </div>

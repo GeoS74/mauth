@@ -1,3 +1,8 @@
+.root {
+  background-color: rgba(110, 110, 110, 0.5);
+  padding: 1px;
+}
+
 .hidden {
   display: none!important;
 }
@@ -28,7 +33,4 @@
   color: #069;
   text-decoration: underline;
   cursor: pointer;
-}
-.root > p {
-  margin-left: 30px;
 }
