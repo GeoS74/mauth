@@ -18,7 +18,7 @@ export const YourName = ({ valueType, jsonData }) => {
                 <label htmlFor="YourName">Your name - optional</label>
                 <input type="text" id="YourName" name="name" placeholder="name" />
             </div>
-            <p style={{ color: "red" }}>{textError(jsonData)}</p>
+            <p style={{ color: "red", fontSize: "13px", margin: "-7px 0 5px 30px" }}>{textError(jsonData)}</p>
         </div>
     );
 };

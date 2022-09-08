@@ -23,7 +23,7 @@ export const Email = ({ jsonData }) => {
         <div className={classNames(styles.email, styles.foo)}>
             <label htmlFor="Email">Email</label>
             <input type="text" id="Email" name="email" placeholder="email" />
-            <p style={{ color: "red" }}>{textError(jsonData)}</p>
+            <p style={{ color: "red", fontSize: "13px" }}>{textError(jsonData)}</p>
         </div>
     );
 };

@@ -42,7 +42,7 @@ export const Password = ({ valueType, jsonData }) => {
                     <Eye valueSlash={valueEyeSlash} />
                 </p>
             </div>
-            <p style={{ color: "red" }}>{textError(jsonData)}</p>
+            <p style={{ color: "red", fontSize: "13px" }}>{textError(jsonData)}</p>
         </div>
     );
 };
