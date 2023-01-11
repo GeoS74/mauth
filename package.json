@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "initdb": "node ./libs/db.init.js",
+    "db:init": "node ./libs/db.init.js",
+    "db:drop": "node ./libs/db.init.js --drop",
     "test": "mocha --no-warnings --ignore=node_modules/** --ignore=client/** **/*.test.js"
   },
   "keywords": [

@@ -14,6 +14,14 @@ const data = {
 (async () => {
   let pool = new Pool(data);
 
+  // dropped database
+  if (process.argv[2] === '--drop') {
+    await pool.query(`DROP DATABASE ${config.postgres.database}`)
+      .then(() => logger.info(`database "${config.postgres.database}" dropped`))
+      .catch((error) => logger.warn(error.message))
+      .finally(() => process.exit());
+  }
+
   await pool.query(`CREATE DATABASE ${config.postgres.database}`)
     .then(() => logger.info(`create database "${config.postgres.database}"`))
     .catch((error) => logger.warn(error.message));

@@ -19,4 +19,4 @@ log4js.configure({
   },
 });
 
-module.exports = (category) => log4js.getLogger(category || '');
+module.exports = (category) => log4js.getLogger('default');

@@ -21,8 +21,8 @@ module.exports = {
   mailer: {
     host: process.env.MAILER_HOST || 'smtp.ethereal.email',
     port: process.env.MAILER_PORT || 587,
-    user: process.env.MAILER_USER || 'maritza.ondricka77@ethereal.email',
-    pass: process.env.MAILER_PASS || 'jXYp3VB8uYG6BccH2Q',
+    user: process.env.MAILER_USER || 'mikel89@ethereal.email',
+    pass: process.env.MAILER_PASS || 'E732fJnKjshE8RecwQ',
     // secure: false,
     // ignoreTLS: true,
   },
