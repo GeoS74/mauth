@@ -1,11 +1,11 @@
 const Koa = require('koa');
 
+const errorCatcher = require('./middleware/error.catcher');
 const authRoutes = require('./routes/auth.routes');
-const errorInterceptor = require('./middleware/error.interceptor');
 
 const app = new Koa();
 
-app.use(errorInterceptor);
+app.use(errorCatcher);
 app.use(authRoutes);
 
 module.exports = app;

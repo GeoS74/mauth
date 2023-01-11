@@ -1,4 +1,4 @@
-const logger = require('../libs/logger')('interceptor');
+const logger = require('../libs/logger');
 
 module.exports = async (ctx, next) => {
   try {
@@ -12,7 +12,11 @@ module.exports = async (ctx, next) => {
       return;
     }
 
+    if (error.code) { // ошибки PostgreSQL
+    }
+
     logger.error(error.message);
+
     ctx.status = 500;
     ctx.body = {
       error: 'internal server error',

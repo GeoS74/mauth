@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const config = require('../config');
-const logger = require('./logger')('init');
+const logger = require('./logger');
 
 const data = {
   user: config.postgres.user,
