@@ -19,11 +19,11 @@ module.exports = {
     digest: 'sha512',
   },
   mailer: {
-    host: process.env.MAILER_HOST || 'smtp.ethereal.email',
-    port: process.env.MAILER_PORT || 587,
-    user: process.env.MAILER_USER || 'mikel89@ethereal.email',
-    pass: process.env.MAILER_PASS || 'E732fJnKjshE8RecwQ',
-    // secure: false,
+    host: process.env.MAIL_HOST || 'smtp.ethereal.email',
+    port: process.env.MAIL_PORT || 587,
+    user: process.env.MAIL_USER || 'mikel89@ethereal.email',
+    pass: process.env.MAIL_PASS || 'E732fJnKjshE8RecwQ',
+    // secure: false, // true for 465, false for other ports
     // ignoreTLS: true,
   },
   jwt: {

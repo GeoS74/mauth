@@ -2,16 +2,14 @@ const { v4: uuid } = require('uuid');
 
 const config = require('../config');
 const db = require('../libs/db');
-const password = require('../libs/password');
+const pass = require('../libs/password');
 const passport = require('../libs/passport');
 const sendMail = require('../libs/send.mail');
 const mapper = require('../mappers/user.mapper');
 
 module.exports.signup = async (ctx) => {
-  const data = ctx.request.body;
-  const user = await _createUser(data.email, data.password, data.name);
+  const user = await _createUser(ctx.request.body);
   await _sendVerifyToken(user.email, user.verificationtoken);
-
   ctx.status = 201;
   ctx.body = mapper(user);
 };
@@ -54,7 +52,7 @@ module.exports.forgot = async (ctx) => {
 };
 
 module.exports.resetPassword = async (ctx) => {
-  const tempPassword = password.random();
+  const tempPassword = pass.random();
   const user = await _temporaryPassword(ctx.token, tempPassword);
   if (!user) {
     ctx.throw(400, 'invalid recovery token');
@@ -85,9 +83,9 @@ module.exports.me = async (ctx) => {
   ctx.body = mapper(user);
 };
 
-async function _setNewPassword(email, pass) {
-  const salt = await password.salt();
-  const passwordHash = await password.generate(pass, salt);
+async function _setNewPassword(email, password) {
+  const salt = await pass.salt();
+  const passwordHash = await pass.generate(password, salt);
   return db.query(`UPDATE users
     SET 
       passwordhash=$2,
@@ -98,8 +96,8 @@ async function _setNewPassword(email, pass) {
 }
 
 async function _temporaryPassword(recoveryToken, tempPassword) {
-  const salt = await password.salt();
-  const passwordHash = await password.generate(tempPassword, salt);
+  const salt = await pass.salt();
+  const passwordHash = await pass.generate(tempPassword, salt);
   return db.query(`UPDATE users
     SET 
       passwordhash=$2,
@@ -112,23 +110,23 @@ async function _temporaryPassword(recoveryToken, tempPassword) {
     .then((res) => res.rows[0]);
 }
 
-async function _createUser(email, pass, name) {
-  const salt = await password.salt();
-  const passwordHash = await password.generate(pass, salt);
-  const user = {
-    email,
-    passwordHash,
-    salt,
-    verificationToken: uuid(),
-    name: name || null,
-  };
+async function _createUser({ email, password, name }) {
+  const salt = await pass.salt();
+  const passwordHash = await pass.generate(password, salt);
+  const verificationToken = uuid();
   return db.query(
     `INSERT INTO users 
-      (${Object.keys(user).join(',')})
+      ( 
+        email, 
+        passwordhash,
+        salt,
+        verificationtoken,
+        name
+      )
     VALUES 
-      (${Object.keys(user).map((_, i) => `$${i + 1}`)})
+      ($1, $2, $3, $4, $5)
     RETURNING *`,
-    Object.values(user),
+    [email, passwordHash, salt, verificationToken, name],
   )
     .then((res) => res.rows[0]);
 }
