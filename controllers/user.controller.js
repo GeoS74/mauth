@@ -8,19 +8,12 @@ const sendMail = require('../libs/send.mail');
 const mapper = require('../mappers/user.mapper');
 
 module.exports.signup = async (ctx) => {
-  try {
-    const data = ctx.request.body;
-    const user = await _createUser(data.email, data.password, data.name);
-    await _sendVerifyToken(user.email, user.verificationtoken);
+  const data = ctx.request.body;
+  const user = await _createUser(data.email, data.password, data.name);
+  await _sendVerifyToken(user.email, user.verificationtoken);
 
-    ctx.status = 201;
-    ctx.body = mapper(user);
-  } catch (error) {
-    if (error.code === '23505') { // unique_violation
-      ctx.throw(400, 'email is not unique');
-    }
-    throw error;
-  }
+  ctx.status = 201;
+  ctx.body = mapper(user);
 };
 
 module.exports.signin = async (ctx, next) => {

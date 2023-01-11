@@ -12,7 +12,14 @@ module.exports = async (ctx, next) => {
       return;
     }
 
-    if (error.code) { // ошибки PostgreSQL
+    if (error.code) { // errors PostgreSQL
+      ctx.status = 400;
+      if (error.code === '23505') { // unique_violation
+        ctx.body = {
+          error: 'email is not unique',
+        };
+        return;
+      }
     }
 
     logger.error(error.message);

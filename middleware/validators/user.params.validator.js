@@ -37,7 +37,7 @@ function _checkPassword(password) {
 }
 
 function _checkName(name) {
-  if (!name) {
+  if (!name) { // this is optional parameter
     return true;
   }
   return /^\w[\d\s-.\w]{2,}/.test(name);
