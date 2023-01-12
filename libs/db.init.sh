@@ -1,4 +1,6 @@
-CREATE EXTENSION IF NOT EXISTS 'pgcrypto';
+#!/bin/bash
+
+psql -U ${POSTGRES_USER} <<-END
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email text UNIQUE NOT NULL,
@@ -14,15 +16,15 @@ CREATE TABLE users (
 CREATE OR REPLACE FUNCTION expire_del_old_rows() RETURNS trigger
   LANGUAGE plpgsql
   AS $$
-BEGIN
-  DELETE FROM users 
-    WHERE 
-      verificationtoken IS NULL
-      AND
-      updatedat < NOW() - INTERVAL '$VERIFICATION_TTL';
-  RETURN NEW;
-END;
-$$;
+  BEGIN
+    DELETE FROM users 
+      WHERE 
+        verificationtoken IS NULL
+        AND
+        updatedat < NOW() - INTERVAL ${VERIFICATION_TTL};
+    RETURN NEW;
+  END;
+  $$;
 CREATE OR REPLACE TRIGGER expire_del_old_rows_trigger
   AFTER INSERT OR UPDATE OF verificationtoken ON users
   EXECUTE PROCEDURE expire_del_old_rows();
@@ -35,11 +37,12 @@ CREATE TABLE sessions (
 CREATE OR REPLACE FUNCTION expire_del_old_sessions() RETURNS trigger
   LANGUAGE plpgsql
   AS $$
-BEGIN
-  DELETE FROM sessions WHERE lastvisit < NOW() - INTERVAL '$SESSION_TTL';
-  RETURN NEW;
-END;
-$$;
+  BEGIN
+    DELETE FROM sessions WHERE lastvisit < NOW() - INTERVAL ${SESSION_TTL};
+    RETURN NEW;
+  END;
+  $$;
 CREATE OR REPLACE TRIGGER expire_del_old_sessions_trigger
   AFTER INSERT OR UPDATE ON sessions
   EXECUTE PROCEDURE expire_del_old_sessions();
+END
