@@ -1,0 +1,9 @@
+/client
+/log
+/node_modules
+Dockerfile
+Makefile
+.dockerignore
+.git
+.gitignore
+pm2.config.js

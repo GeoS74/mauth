@@ -1,0 +1,26 @@
+version: '1.0'
+services:
+  mauth:
+      build: .
+      volumes:
+        - mauth-initdb:/mauth/libs/
+    ports:
+      - "3001:3001"
+    environment:
+      - SERVER_PORT=3001
+      - DB_HOST=db
+      - DB_USER=mauth
+      - DB_NAME=mauth
+      - DB_PASS=admin
+      - VERIFICATION_TTL="10 minute"
+      - SESSION_TTL="30 day"
+  db:
+    image: "postgres"
+    volumes:
+      - mauth-initdb:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=mauth
+      - POSTGRES_DB=mauth
+volumes:
+  mauth-initdb:

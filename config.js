@@ -27,15 +27,15 @@ module.exports = {
     // ignoreTLS: true,
   },
   jwt: {
-    ttl: 1800,
+    ttl: process.env.JWT_TTL || 1800,
     secretKey: process.env.JWT_SECRET_KEY || 'any secret phrase',
   },
   session: {
     max: 5,
-    ttl: '30 day',
+    ttl: process.env.SESSION_TTL || '30 day',
   },
   verification: {
-    ttl: '10 minute',
+    ttl: process.env.VERIFICATION_TTL || '10 minute',
   },
   log: {
     file: 'app.log',

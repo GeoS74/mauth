@@ -1,7 +1,7 @@
 {
   "name": "mauth",
-  "version": "0.0.1",
-  "description": "microservice for authorization with GUI",
+  "version": "1.0.0",
+  "description": "microservice for authorization and registration users",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
@@ -22,7 +22,8 @@
     "eslint": "^8.20.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
-    "mocha": "^10.0.0"
+    "mocha": "^10.0.0",
+    "node-fetch": "^2.6.7"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
@@ -33,7 +34,6 @@
     "koa-passport": "^5.0.0",
     "koa-router": "^12.0.0",
     "log4js": "^6.6.1",
-    "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.7",
     "passport-local": "^1.0.0",
     "pg": "^8.7.3",
