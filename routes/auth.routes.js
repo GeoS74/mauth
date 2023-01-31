@@ -6,7 +6,7 @@ const session = require('../controllers/session.controller');
 const userValidator = require('../middleware/validators/user.params.validator');
 const tokenValidator = require('../middleware/validators/token.validator');
 
-const router = new Router({ prefix: '' });
+const router = new Router({ prefix: '/api/mauth' });
 
 router.post(
   '/signup',
