@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const cors = require('@koa/cors')
+const cors = require('@koa/cors');
 
 const config = require('./config');
 const errorCatcher = require('./middleware/error.catcher');
