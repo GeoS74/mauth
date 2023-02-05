@@ -8,12 +8,19 @@ services:
       - "3001:3001"
     environment:
       - SERVER_PORT=3001
-      - DB_HOST=db
       - DB_USER=mauth
+      - DB_HOST=db
       - DB_NAME=mauth
       - DB_PASS=admin
+      - MAIL_HOST="smtp.ethereal.email"
+      - MAIL_PORT=587
+      - MAIL_USER="demetrius20@ethereal.email"
+      - MAIL_PASS="cbz3tDWvSM4Xtxj1Zt"
+      - JWT_TTL=1800
+      - JWT_SECRET_KEY="any secret"
       - VERIFICATION_TTL="10 minute"
       - SESSION_TTL="30 day"
+      - NODE_ENV=dev
   db:
     image: "postgres"
     volumes:

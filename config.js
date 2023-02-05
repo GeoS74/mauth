@@ -17,7 +17,7 @@ module.exports = {
     port: process.env.DB_PORT || 5432,
   },
   crypto: {
-    iterations: (process.env.NODE_ENV === 'develop' ? 1 : 12000),
+    iterations: (process.env.NODE_ENV === 'dev' ? 1 : 12000),
     length: 128,
     digest: 'sha512',
   },
