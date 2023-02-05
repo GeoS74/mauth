@@ -7,3 +7,4 @@ Makefile
 .git
 .gitignore
 pm2.config.js
+secret.env
