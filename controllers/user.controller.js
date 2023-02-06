@@ -185,7 +185,7 @@ async function _sendVerifyToken(to, verificationtoken) {
     to,
     subject: 'Подтверждение email',
     template: 'confirmation',
-    locals: { host: config.server.domain, token: verificationtoken },
+    locals: { host: config.server.domain, token: verificationtoken, path: config.template.confirm },
   });
 }
 
@@ -194,7 +194,7 @@ async function _sendRecoveryToken(to, recoverytoken) {
     to,
     subject: 'Восстановление пароля',
     template: 'recovery',
-    locals: { host: config.server.domain, token: recoverytoken },
+    locals: { host: config.server.domain, token: recoverytoken, path: config.template.recovery },
   });
 }
 

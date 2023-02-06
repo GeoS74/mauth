@@ -24,11 +24,15 @@ module.exports = {
   mailer: {
     host: process.env.MAIL_HOST || 'smtp.ethereal.email',
     port: process.env.MAIL_PORT || 587,
-    user: process.env.MAIL_USER || 'demetrius20@ethereal.email',
-    pass: process.env.MAIL_PASS || 'cbz3tDWvSM4Xtxj1Zt',
-    // docker compose не передаёт булево значение, взамен передаётся строка 'false' или 'true', 
+    user: process.env.MAIL_USER || 'aida.okuneva@ethereal.email',
+    pass: process.env.MAIL_PASS || 'D73qPWcRCQgJ6vWt6J',
+    // docker compose не передаёт булево значение, взамен передаётся строка 'false' или 'true',
     secure: (process.env.MAIL_SECURE === 'true') || false, // true for 465, false for other ports
     ignoreTLS: (process.env.IGNORE_TLS === 'true') || false, // default true
+  },
+  template: {
+    confirm: process.env.TPL_CONFIRM_PATH || '/api/mauth/confirm',
+    recovery: process.env.TPL_RECOVERY_PATH || '/api/mauth/forgot',
   },
   jwt: {
     ttl: process.env.JWT_TTL || 1800,
