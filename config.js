@@ -26,11 +26,13 @@ module.exports = {
     port: +process.env.MAIL_PORT || 587,
     user: process.env.MAIL_USER || 'calista.ledner89@ethereal.email',
     pass: process.env.MAIL_PASS || 'K3peFMtyuEXehgba8r',
+    // docker compose не передаёт булево значение, взамен передаётся строка 'false', 
+    // которую нужно приводить к логическому типу
     secure: (process.env.MAIL_SECURE === 'true') || !(process.env.MAIL_SECURE === 'false') || false, // true for 465, false for other ports
     ignoreTLS: (process.env.IGNORE_TLS === 'true') || !(process.env.IGNORE_TLS === 'false') || false, // default true
   },
   jwt: {
-    ttl: +process.env.JWT_TTL || 1800,
+    ttl: process.env.JWT_TTL || 1800,
     secretKey: process.env.JWT_SECRET_KEY || 'any secret phrase',
   },
   session: {

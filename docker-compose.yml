@@ -1,6 +1,6 @@
 version: '1.0'
 services:
-  app:
+  application:
     build: .
     volumes:
       - initdb:/mauth/libs/
@@ -8,14 +8,17 @@ services:
       - "3001:3001"
     environment:
       - SERVER_PORT=3001
+      #- SERVER_DOMAIN=127.0.0.1:3001
       - DB_USER=mauth
       - DB_HOST=db
       - DB_NAME=mauth
       - DB_PASS=admin
-      - MAIL_HOST="smtp.ethereal.email"
+      - MAIL_HOST=smtp.ethereal.email
       - MAIL_PORT=587
-      - MAIL_USER="demetrius20@ethereal.email"
-      - MAIL_PASS="cbz3tDWvSM4Xtxj1Zt"
+      - MAIL_USER=demetrius20@ethereal.email
+      - MAIL_PASS=cbz3tDWvSM4Xtxj1Zt
+      - MAIL_SECURE=false
+      - IGNORE_TLS=false
       - JWT_TTL=1800
       - JWT_SECRET_KEY="any secret"
       - VERIFICATION_TTL="10 minute"

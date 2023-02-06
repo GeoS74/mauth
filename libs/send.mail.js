@@ -15,18 +15,6 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const foo = {
-  host: config.mailer.host,
-  port: config.mailer.port,
-  secure: config.mailer.secure,
-  ignoreTLS: config.mailer.ignoreTLS,
-  auth: {
-    user: config.mailer.user,
-    pass: config.mailer.pass,
-  },
-}
-console.log(foo)
-
 module.exports = async (options) => {
   const html = pug.renderFile(
     `${path.join(__dirname, '../templates', options.template)}.pug`,
