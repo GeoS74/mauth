@@ -26,8 +26,8 @@ module.exports = {
     port: +process.env.MAIL_PORT || 587,
     user: process.env.MAIL_USER || 'calista.ledner89@ethereal.email',
     pass: process.env.MAIL_PASS || 'K3peFMtyuEXehgba8r',
-    secure: (process.env.MAIL_SECURE === 'true') || (process.env.MAIL_SECURE === 'false') || false, // true for 465, false for other ports
-    ignoreTLS: (process.env.IGNORE_TLS === 'true') || (process.env.IGNORE_TLS === 'false') || true,
+    secure: (process.env.MAIL_SECURE === 'true') || !(process.env.MAIL_SECURE === 'false') || false, // true for 465, false for other ports
+    ignoreTLS: (process.env.IGNORE_TLS === 'true') || !(process.env.IGNORE_TLS === 'false') || false, // default true
   },
   jwt: {
     ttl: +process.env.JWT_TTL || 1800,
