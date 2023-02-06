@@ -23,13 +23,12 @@ module.exports = {
   },
   mailer: {
     host: process.env.MAIL_HOST || 'smtp.ethereal.email',
-    port: +process.env.MAIL_PORT || 587,
-    user: process.env.MAIL_USER || 'calista.ledner89@ethereal.email',
-    pass: process.env.MAIL_PASS || 'K3peFMtyuEXehgba8r',
-    // docker compose не передаёт булево значение, взамен передаётся строка 'false', 
-    // которую нужно приводить к логическому типу
-    secure: (process.env.MAIL_SECURE === 'true') || !(process.env.MAIL_SECURE === 'false') || false, // true for 465, false for other ports
-    ignoreTLS: (process.env.IGNORE_TLS === 'true') || !(process.env.IGNORE_TLS === 'false') || false, // default true
+    port: process.env.MAIL_PORT || 587,
+    user: process.env.MAIL_USER || 'demetrius20@ethereal.email',
+    pass: process.env.MAIL_PASS || 'cbz3tDWvSM4Xtxj1Zt',
+    // docker compose не передаёт булево значение, взамен передаётся строка 'false' или 'true', 
+    secure: (process.env.MAIL_SECURE === 'true') || false, // true for 465, false for other ports
+    ignoreTLS: (process.env.IGNORE_TLS === 'true') || false, // default true
   },
   jwt: {
     ttl: process.env.JWT_TTL || 1800,
