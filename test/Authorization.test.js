@@ -4,12 +4,13 @@ const { validate: uuidValidate } = require('uuid');
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: './secret.env' });
 
-if (process.env.NODE_ENV !== 'develop') {
+const config = require('../config');
+
+if (config.node.env !== 'dev') {
   console.log('Error: нельзя запускать тесты в производственной среде, это может привести к потере данных');
   process.exit();
 }
 
-const config = require('../config');
 const app = require('../app');
 const db = require('../libs/db');
 
@@ -40,30 +41,30 @@ describe('/test/Authorization.test.js', () => {
     it('signup', async function test() {
       this.timeout(10000);
 
-      let response = await fetch(`http://localhost:${config.server.port}/signup`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify({ email: 'w' });
-      response = await fetch(`http://localhost:${config.server.port}/signup`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify({ email: 't@e.st' });
-      response = await fetch(`http://localhost:${config.server.port}/signup`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify(user);
-      response = await fetch(`http://localhost:${config.server.port}/signup`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
       expectStatus.call(this, response.status, 201);
       expectSignupMessage.call(this, response.data);
 
-      response = await fetch(`http://localhost:${config.server.port}/signup`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
@@ -81,25 +82,25 @@ describe('/test/Authorization.test.js', () => {
 
     it('signin', async () => {
       optional.body = JSON.stringify({});
-      let response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify({ email: 'w' });
-      response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify({ email: 't@e.st' });
-      response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify(user);
-      response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
@@ -107,7 +108,7 @@ describe('/test/Authorization.test.js', () => {
       // confirm test email
       await db.query('UPDATE users SET verificationtoken=NULL WHERE email=$1', [user.email]);
 
-      response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectSigninMessage.call(this, response.data);
@@ -129,20 +130,20 @@ describe('/test/Authorization.test.js', () => {
       WHERE U.email=$1`, [user.email]).then((res) => res.rows[0].token);
 
       optional.method = 'DELETE';
-      let response = await fetch(`http://localhost:${config.server.port}/signout`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signout`, optional)
         .then(result);
       expectStatus.call(this, response.status, 401);
       expectErrorMessage.call(this, response.data);
 
       optional.headers.Authorization = 'Bearer 123';
 
-      response = await fetch(`http://localhost:${config.server.port}/signout`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signout`, optional)
         .then(result);
       expectStatus.call(this, response.status, 401);
       expectErrorMessage.call(this, response.data);
 
       optional.headers.Authorization = `Bearer ${token}`;
-      response = await fetch(`http://localhost:${config.server.port}/signout`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signout`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expect(response.data, 'сервер возвращает объект')
@@ -160,7 +161,7 @@ describe('/test/Authorization.test.js', () => {
       await db.query('DELETE FROM users');
       optional.method = 'POST';
       optional.body = JSON.stringify(user);
-      let response = await fetch(`http://localhost:${config.server.port}/signup`, optional);
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional);
 
       const verificationToken = await db.query(`
         SELECT verificationtoken FROM users WHERE email=$1`, [user.email])
@@ -168,17 +169,17 @@ describe('/test/Authorization.test.js', () => {
 
       optional.method = 'GET';
       optional.body = null;
-      response = await fetch(`http://localhost:${config.server.port}/confirm/123`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/123`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
-      response = await fetch(`http://localhost:${config.server.port}/confirm/${verificationToken}`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/${verificationToken}`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectInfoMessage.call(this, response.data);
 
-      response = await fetch(`http://localhost:${config.server.port}/confirm/${verificationToken}`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/${verificationToken}`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
@@ -192,20 +193,20 @@ describe('/test/Authorization.test.js', () => {
     it('access', async () => {
       optional.method = 'POST';
       optional.body = JSON.stringify(user);
-      const accessToken = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      const accessToken = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(async (res) => await res.json())
         .then((res) => res.access);
 
       optional.method = 'GET';
       optional.body = null;
-      let response = await fetch(`http://localhost:${config.server.port}/access`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/access`, optional)
         .then(result);
       expectStatus.call(this, response.status, 401);
       expectErrorMessage.call(this, response.data);
 
       optional.headers.Authorization = `Bearer ${accessToken}`;
 
-      response = await fetch(`http://localhost:${config.server.port}/access`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/access`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectSignupMessage.call(this, response.data);
@@ -214,19 +215,19 @@ describe('/test/Authorization.test.js', () => {
     it('refresh', async () => {
       optional.method = 'POST';
       optional.body = JSON.stringify(user);
-      const tokens = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      const tokens = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(async (res) => await res.json());
 
       optional.method = 'GET';
       optional.body = null;
       optional.headers.Authorization = `Bearer ${tokens.access}`;
-      let response = await fetch(`http://localhost:${config.server.port}/refresh`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/refresh`, optional)
         .then(result);
       expectStatus.call(this, response.status, 401);
       expectErrorMessage.call(this, response.data);
 
       optional.headers.Authorization = `Bearer ${tokens.refresh}`;
-      response = await fetch(`http://localhost:${config.server.port}/refresh`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/refresh`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectSigninMessage.call(this, response.data);
@@ -237,7 +238,7 @@ describe('/test/Authorization.test.js', () => {
     it('change password', async function test() {
       optional.method = 'POST';
       optional.body = JSON.stringify(user);
-      const tokens = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      const tokens = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(async (res) => await res.json());
 
       optional.method = 'PATCH';
@@ -245,19 +246,19 @@ describe('/test/Authorization.test.js', () => {
       user.password = '54321';
       optional.body = JSON.stringify(user);
 
-      let response = await fetch(`http://localhost:${config.server.port}/password`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/password`, optional)
         .then(result);
       expectStatus.call(this, response.status, 401);
       expectErrorMessage.call(this, response.data);
 
       optional.headers.Authorization = `Bearer ${tokens.access}`;
-      response = await fetch(`http://localhost:${config.server.port}/password`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/password`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectInfoMessage.call(this, response.data);
 
       optional.method = 'POST';
-      response = await fetch(`http://localhost:${config.server.port}/signin`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectSigninMessage.call(this, response.data);
@@ -269,20 +270,20 @@ describe('/test/Authorization.test.js', () => {
       optional.method = 'PATCH';
       optional.body = JSON.stringify({});
 
-      let response = await fetch(`http://localhost:${config.server.port}/forgot`, optional)
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/forgot`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify({ email: 'w' });
-      response = await fetch(`http://localhost:${config.server.port}/forgot`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/forgot`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
       optional.body = JSON.stringify(user);
 
-      response = await fetch(`http://localhost:${config.server.port}/forgot`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/forgot`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectInfoMessage.call(this, response.data);
@@ -294,17 +295,17 @@ describe('/test/Authorization.test.js', () => {
 
       optional.method = 'GET';
       optional.body = null;
-      response = await fetch(`http://localhost:${config.server.port}/forgot/123`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/forgot/123`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
 
-      response = await fetch(`http://localhost:${config.server.port}/forgot/${token}`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/forgot/${token}`, optional)
         .then(result);
       expectStatus.call(this, response.status, 200);
       expectInfoMessage.call(this, response.data);
 
-      response = await fetch(`http://localhost:${config.server.port}/forgot/${token}`, optional)
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/forgot/${token}`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
