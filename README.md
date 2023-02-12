@@ -52,10 +52,10 @@ docker compose up -d
 - access токен доступа (короткоживущий JWT-токен);
 - refresh токен.
 
-Клиент при обращении к сервису по маршрутам, требующим какого-либо токена, должен передавать токен в заголовке 'Authorisation'. Пример:
+Клиент при обращении к сервису по маршрутам, требующим какого-либо токена, должен передавать токен в заголовке 'Authorization'. Пример:
 ```
 headers: {
-  'Authorisation': 'Bearer eff2d485-8669-4d6b-8d6c-22ddc6d0af6c'
+  'Authorization': 'Bearer eff2d485-8669-4d6b-8d6c-22ddc6d0af6c'
 }
 ```
 
@@ -99,7 +99,7 @@ GET /api/mauth/access
 
 Маршрут:
 ```
-GET /api/mauth/access
+GET /api/mauth/refresh
 ```
 
 ### Запрос на изменение пароля
