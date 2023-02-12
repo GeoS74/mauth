@@ -35,7 +35,7 @@ module.exports = {
     recovery: process.env.TPL_RECOVERY_PATH || '/api/mauth/forgot',
   },
   jwt: {
-    ttl: process.env.JWT_TTL || 1800,
+    ttl: +process.env.JWT_TTL || 1800,
     secretKey: process.env.JWT_SECRET_KEY || 'any secret phrase',
   },
   session: {

@@ -13,16 +13,16 @@ services:
       - DB_HOST=db
       - DB_NAME=mauth
       - DB_PASS=admin
-      - MAIL_USER=carson.kunde24@ethereal.email
-      - MAIL_PASS=2uzPaY8qYFN7xbDyHm
+      - MAIL_USER=jany.ankunding23@ethereal.email
+      - MAIL_PASS=2MbdmBBW1Dba8HJSH3
       - MAIL_HOST=smtp.ethereal.email
       - MAIL_PORT=587
       - MAIL_SECURE=false
       - IGNORE_TLS=false
       - JWT_TTL=1800
-      - JWT_SECRET_KEY="any secret"
-      - VERIFICATION_TTL="10 minute"
-      - SESSION_TTL="30 day"
+      - JWT_SECRET_KEY=any secret phrase
+      - VERIFICATION_TTL=10 minute
+      - SESSION_TTL=30 day
       - NODE_ENV=dev
   db:
     image: "postgres"
