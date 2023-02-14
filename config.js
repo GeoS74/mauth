@@ -36,7 +36,7 @@ module.exports = {
   },
   jwt: {
     ttl: +process.env.JWT_TTL || 1800,
-    secretKey: process.env.JWT_SECRET_KEY || 'any secret phrase',
+    secretKey: process.env.JWT_SECRET_KEY || 'any_secret',
   },
   session: {
     max: 5,
