@@ -20,7 +20,7 @@ module.exports.signin = async (ctx, next) => {
   await next();
 };
 
-module.exports.confirm = async (ctx) => {
+module.exports.confirm = async (ctx, next) => {
   const row = await _confirmAccount(ctx.token);
   if (!row?.id) {
     ctx.throw(400, 'invalid verification token');
@@ -31,11 +31,35 @@ module.exports.confirm = async (ctx) => {
     ctx.throw(400, 'invalid verification token');
   }
 
+  ctx.user = user;
+  await next();
+};
+
+module.exports.firstUserMustBeAdmin = async (ctx) => {
+  const accaunts = await _countAccaunts();
+
+  if (+accaunts.count === 1) {
+    await firstUserIsAdmin(ctx.user.id);
+  }
+
   ctx.status = 200;
   ctx.body = {
-    message: `you have successfully verified your ${user.email} email address`,
+    message: `you have successfully verified your ${ctx.user.email} email address`,
   };
 };
+
+async function firstUserIsAdmin(userId) {
+  return db.query(`UPDATE users 
+      SET rank='admin' 
+      WHERE id=$1`, [userId])
+    .then((res) => res.rows[0]);
+}
+
+async function _countAccaunts() {
+  return db.query(`SELECT COUNT(*) FROM users
+  WHERE verificationtoken IS NULL `)
+    .then((res) => res.rows[0]);
+}
 
 module.exports.forgot = async (ctx) => {
   const user = await _createRecoveryToken(ctx.request.body.email);

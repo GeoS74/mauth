@@ -30,6 +30,7 @@ router.get(
   '/confirm/:token',
   tokenValidator.confirmToken,
   user.confirm,
+  user.firstUserMustBeAdmin,
 );
 router.get(
   '/access',
