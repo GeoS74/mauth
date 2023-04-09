@@ -19,7 +19,7 @@ CREATE OR REPLACE FUNCTION expire_del_old_rows() RETURNS trigger
   BEGIN
     DELETE FROM users 
       WHERE 
-        verificationtoken IS NULL
+        verificationtoken IS NOT NULL
         AND
         updatedat < NOW() - INTERVAL ${VERIFICATION_TTL};
     RETURN NEW;

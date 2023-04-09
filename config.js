@@ -24,8 +24,8 @@ module.exports = {
   mailer: {
     host: process.env.MAIL_HOST || 'smtp.ethereal.email',
     port: process.env.MAIL_PORT || 587,
-    user: process.env.MAIL_USER || 'jany.ankunding23@ethereal.email',
-    pass: process.env.MAIL_PASS || '2MbdmBBW1Dba8HJSH3',
+    user: process.env.MAIL_USER || 'carlos.mclaughlin74@ethereal.email',
+    pass: process.env.MAIL_PASS || 'HHFkMdCtXwYpy7Ej7a',
     // docker compose не передаёт булево значение, взамен передаётся строка 'false' или 'true',
     secure: (process.env.MAIL_SECURE === 'true') || false, // true for 465, false for other ports
     ignoreTLS: (process.env.IGNORE_TLS === 'true') || false, // default true
@@ -43,6 +43,7 @@ module.exports = {
     ttl: process.env.SESSION_TTL || '30 day',
   },
   verification: {
+    ignore: process.env.VERIFICATION_IGNORE === 'true',
     ttl: process.env.VERIFICATION_TTL || '10 minute',
   },
   log: {

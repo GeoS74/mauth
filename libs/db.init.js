@@ -55,7 +55,7 @@ const data = {
     BEGIN
       DELETE FROM users 
         WHERE 
-          verificationtoken IS NULL
+          verificationtoken IS NOT NULL
           AND
           updatedat < NOW() - INTERVAL '${config.verification.ttl}';
       RETURN NEW;

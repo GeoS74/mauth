@@ -137,7 +137,7 @@ async function _temporaryPassword(recoveryToken, tempPassword) {
 async function _createUser({ email, password, name }) {
   const salt = await pass.salt();
   const passwordHash = await pass.generate(password, salt);
-  const verificationToken = uuid();
+  const verificationToken = config.verification.ignore ? null : uuid();
   return db.query(
     `INSERT INTO users 
       ( 
@@ -168,6 +168,7 @@ async function _confirmAccount(token) {
   return db.query(`UPDATE users 
       SET verificationtoken=NULL 
       WHERE verificationtoken=$1
+      AND updatedat > NOW() - INTERVAL '${config.verification.ttl}'
       RETURNING id`, [token])
     .then((res) => res.rows[0]);
 }
