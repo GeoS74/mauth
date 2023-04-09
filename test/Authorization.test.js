@@ -315,6 +315,82 @@ describe('/test/Authorization.test.js', () => {
       expect(token, 'сервер удаляет ключ recoverytoken')
         .equal(null);
     });
+
+    it('verification ttl', async function test() {
+      this.timeout(10000);
+
+      // установить время верификации в 1 секунду
+      const currentVerificationTtl = config.verification.ttl;
+      config.verification.ttl = '1 second'
+      await db.query(`
+        CREATE OR REPLACE FUNCTION expire_del_old_rows_test() RETURNS trigger
+          LANGUAGE plpgsql
+          AS $$
+        BEGIN
+          DELETE FROM users 
+            WHERE 
+              verificationtoken IS NOT NULL
+              AND
+              updatedat < NOW() - INTERVAL '${config.verification.ttl}';
+          RETURN NEW;
+        END;
+        $$;
+      `);
+
+      await db.query('DELETE FROM users');
+      optional.method = 'POST';
+      optional.body = JSON.stringify(user);
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional);
+
+      let verificationToken = await db.query(`
+        SELECT verificationtoken FROM users WHERE email=$1`, [user.email])
+        .then((res) => res.rows[0].verificationtoken);
+
+      await new Promise(res => setTimeout(() => res(), 2000))
+  
+      optional.method = 'GET';
+      optional.body = null;
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/${verificationToken}`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 400);
+      expectErrorMessage.call(this, response.data);
+
+
+      // установить прежнее значение конфига
+      config.verification.ttl = currentVerificationTtl;
+      await db.query(`
+        CREATE OR REPLACE FUNCTION expire_del_old_rows_test() RETURNS trigger
+          LANGUAGE plpgsql
+          AS $$
+        BEGIN
+          DELETE FROM users 
+            WHERE 
+              verificationtoken IS NOT NULL
+              AND
+              updatedat < NOW() - INTERVAL '${config.verification.ttl}';
+          RETURN NEW;
+        END;
+        $$;
+      `);
+
+      await db.query('DELETE FROM users');
+      optional.method = 'POST';
+      optional.body = JSON.stringify(user);
+      await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional);
+
+      verificationToken = await db.query(`
+        SELECT verificationtoken FROM users WHERE email=$1`, [user.email])
+        .then((res) => res.rows[0].verificationtoken);
+
+      await new Promise(res => setTimeout(() => res(), 2000))
+
+      optional.method = 'GET';
+      optional.body = null;
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/${verificationToken}`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 200);
+      expectInfoMessage.call(this, response.data);
+    });
   });
 });
 
