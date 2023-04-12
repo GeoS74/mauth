@@ -7,11 +7,20 @@ const passport = require('../libs/passport');
 const sendMail = require('../libs/send.mail');
 const mapper = require('../mappers/user.mapper');
 
-module.exports.signup = async (ctx) => {
+module.exports.signup = async (ctx, next) => {
   const user = await _createUser(ctx.request.body);
-  await _sendVerifyToken(user.email, user.verificationtoken);
+
+  ctx.user = user;
+
+  if (!config.verification.ignore) {
+    await _sendVerifyToken(user.email, user.verificationtoken);
+  } else {
+    await next();
+    ctx.user = await _findUserById(user.id);
+  }
+
   ctx.status = 201;
-  ctx.body = mapper(user);
+  ctx.body = mapper(ctx.user);
 };
 
 module.exports.signin = async (ctx, next) => {
@@ -21,17 +30,17 @@ module.exports.signin = async (ctx, next) => {
 };
 
 module.exports.confirm = async (ctx, next) => {
-  const row = await _confirmAccount(ctx.token);
-  if (!row?.id) {
-    ctx.throw(400, 'invalid verification token');
-  }
-
-  const user = await _findUserById(row.id);
+  const user = await _confirmAccount(ctx.token);
   if (!user) {
     ctx.throw(400, 'invalid verification token');
   }
 
   ctx.user = user;
+
+  ctx.status = 200;
+  ctx.body = {
+    message: `you have successfully verified your ${ctx.user.email} email address`,
+  };
   await next();
 };
 
@@ -41,11 +50,6 @@ module.exports.firstUserMustBeAdmin = async (ctx) => {
   if (+accaunts.count === 1) {
     await firstUserIsAdmin(ctx.user.id);
   }
-
-  ctx.status = 200;
-  ctx.body = {
-    message: `you have successfully verified your ${ctx.user.email} email address`,
-  };
 };
 
 async function firstUserIsAdmin(userId) {
@@ -169,7 +173,7 @@ async function _confirmAccount(token) {
       SET verificationtoken=NULL 
       WHERE verificationtoken=$1
       AND updatedat > NOW() - INTERVAL '${config.verification.ttl}'
-      RETURNING id`, [token])
+      RETURNING *`, [token])
     .then((res) => res.rows[0]);
 }
 

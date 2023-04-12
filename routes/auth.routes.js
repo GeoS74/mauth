@@ -13,6 +13,7 @@ router.post(
   koaBody,
   userValidator.params,
   user.signup,
+  user.firstUserMustBeAdmin,
 );
 router.post(
   '/signin',

@@ -38,8 +38,11 @@ describe('/test/Authorization.test.js', () => {
       body: JSON.stringify({}),
     };
 
-    it('signup', async function test() {
+    it('signup with verification', async function test() {
       this.timeout(10000);
+
+      await db.query('DELETE FROM users');
+      config.verification.ignore = false;
 
       let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
@@ -63,6 +66,7 @@ describe('/test/Authorization.test.js', () => {
         .then(result);
       expectStatus.call(this, response.status, 201);
       expectSignupMessage.call(this, response.data);
+      expect(response.data.rank, 'первый user до потверждения должен быть user').to.be.equal('user');
 
       response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
         .then(result);
@@ -78,9 +82,60 @@ describe('/test/Authorization.test.js', () => {
         });
       expect(uuidValidate(token), 'verificationtoken должен быть валидным uuid')
         .equal(true);
+
+      await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/${token}`);
+
+      const rank = await db.query(`
+        SELECT rank FROM users WHERE email=$1`, [user.email])
+        .then((res) => res.rows[0].rank);
+      expect(rank, 'первый user после потверждения долджен стать admin').to.be.equal('admin');
+    });
+
+    it('signup without verification', async function test() {
+      this.timeout(10000);
+
+      optional.body = JSON.stringify({});
+
+      await db.query('DELETE FROM users');
+      config.verification.ignore = true;
+
+      let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 400);
+      expectErrorMessage.call(this, response.data);
+
+      optional.body = JSON.stringify({ email: 'w' });
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 400);
+      expectErrorMessage.call(this, response.data);
+
+      optional.body = JSON.stringify({ email: 't@e.st' });
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 400);
+      expectErrorMessage.call(this, response.data);
+
+      optional.body = JSON.stringify(user);
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 201);
+      expectSignupMessage.call(this, response.data);
+      expect(response.data.rank, 'первый user должен быть admin').to.be.equal('admin');
+
+      response = await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional)
+        .then(result);
+      expectStatus.call(this, response.status, 400);
+      expectErrorMessage.call(this, response.data);
+
+      config.verification.ignore = false;
     });
 
     it('signin', async () => {
+      await db.query('DELETE FROM users');
+      optional.body = JSON.stringify(user);
+      await fetch(`http://localhost:${config.server.port}/api/mauth/signup`, optional);
+
       optional.body = JSON.stringify({});
       let response = await fetch(`http://localhost:${config.server.port}/api/mauth/signin`, optional)
         .then(result);
@@ -321,7 +376,7 @@ describe('/test/Authorization.test.js', () => {
 
       // установить время верификации в 1 секунду
       const currentVerificationTtl = config.verification.ttl;
-      config.verification.ttl = '1 second'
+      config.verification.ttl = '1 second';
       await db.query(`
         CREATE OR REPLACE FUNCTION expire_del_old_rows_test() RETURNS trigger
           LANGUAGE plpgsql
@@ -346,15 +401,14 @@ describe('/test/Authorization.test.js', () => {
         SELECT verificationtoken FROM users WHERE email=$1`, [user.email])
         .then((res) => res.rows[0].verificationtoken);
 
-      await new Promise(res => setTimeout(() => res(), 2000))
-  
+      await new Promise((res) => setTimeout(() => res(), 2000));
+
       optional.method = 'GET';
       optional.body = null;
       response = await fetch(`http://localhost:${config.server.port}/api/mauth/confirm/${verificationToken}`, optional)
         .then(result);
       expectStatus.call(this, response.status, 400);
       expectErrorMessage.call(this, response.data);
-
 
       // установить прежнее значение конфига
       config.verification.ttl = currentVerificationTtl;
@@ -382,7 +436,7 @@ describe('/test/Authorization.test.js', () => {
         SELECT verificationtoken FROM users WHERE email=$1`, [user.email])
         .then((res) => res.rows[0].verificationtoken);
 
-      await new Promise(res => setTimeout(() => res(), 2000))
+      await new Promise((res) => setTimeout(() => res(), 2000));
 
       optional.method = 'GET';
       optional.body = null;
