@@ -40,5 +40,6 @@ function _checkName(name) {
   if (!name) { // this is optional parameter
     return true;
   }
-  return /^\w[\d\s-.\w]{2,}/.test(name);
+  // return /^\w[\d\s-.\w]{2,}/.test(name);
+  return /[a-zA-Zа-яА-Я\d]{2,}/.test(name);
 }
