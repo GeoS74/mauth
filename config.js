@@ -7,7 +7,6 @@ module.exports = {
   server: {
     host: process.env.SERVER_HOST || 'localhost',
     port: process.env.SERVER_PORT || 3001,
-    domain: process.env.SERVER_DOMAIN || 'localhost:3001',
   },
   postgres: {
     user: process.env.DB_USER || 'postgres',
@@ -24,15 +23,19 @@ module.exports = {
   mailer: {
     host: process.env.MAIL_HOST || 'smtp.ethereal.email',
     port: process.env.MAIL_PORT || 587,
-    user: process.env.MAIL_USER || 'carlos.mclaughlin74@ethereal.email',
-    pass: process.env.MAIL_PASS || 'HHFkMdCtXwYpy7Ej7a',
+    user: process.env.MAIL_USER || 'rusty.rolfson44@ethereal.email',
+    pass: process.env.MAIL_PASS || 'n6nKgTFPEQ86p5xwTw',
     // docker compose не передаёт булево значение, взамен передаётся строка 'false' или 'true',
     secure: (process.env.MAIL_SECURE === 'true') || false, // true for 465, false for other ports
     ignoreTLS: (process.env.IGNORE_TLS === 'true') || false, // default true
   },
   template: {
-    confirm: process.env.TPL_CONFIRM_PATH || '/api/mauth/confirm',
-    recovery: process.env.TPL_RECOVERY_PATH || '/api/mauth/forgot',
+    protocol: process.env.TPL_PROTOCOL || 'http',
+    domain: process.env.TPL_DOMAIN || 'localhost:3001',
+    path: {
+      confirm: process.env.TPL_CONFIRM_PATH || '/api/mauth/confirm',
+      recovery: process.env.TPL_RECOVERY_PATH || '/api/mauth/forgot',
+    },
   },
   jwt: {
     ttl: +process.env.JWT_TTL || 1800,

@@ -212,26 +212,39 @@ async function _autenticateUser(ctx) {
 async function _sendVerifyToken(to, verificationtoken) {
   return sendMail({
     to,
-    subject: 'Подтверждение email',
+    subject: `Подтверждение регистрации на сайте ${config.template.domain}`,
     template: 'confirmation',
-    locals: { host: config.server.domain, token: verificationtoken, path: config.template.confirm },
+    locals: {
+      protocol: config.template.protocol,
+      domain: config.template.domain,
+      path: config.template.path.confirm,
+      token: verificationtoken,
+    },
   });
 }
 
 async function _sendRecoveryToken(to, recoverytoken) {
   return sendMail({
     to,
-    subject: 'Восстановление пароля',
+    subject: `Восстановление пароля на сайте ${config.template.domain}`,
     template: 'recovery',
-    locals: { host: config.server.domain, token: recoverytoken, path: config.template.recovery },
+    locals: {
+      protocol: config.template.protocol,
+      domain: config.template.domain,
+      path: config.template.path.recovery,
+      token: recoverytoken,
+    },
   });
 }
 
 async function _sendTemporaryPassword(to, tempPassword) {
   return sendMail({
     to,
-    subject: 'Временный пароль',
+    subject: `Временный пароль на сайте ${config.template.domain}`,
     template: 'change',
-    locals: { host: config.server.domain, password: tempPassword },
+    locals: {
+      domain: config.template.domain,
+      password: tempPassword,
+    },
   });
 }
