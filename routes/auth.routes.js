@@ -5,11 +5,13 @@ const user = require('../controllers/user.controller');
 const session = require('../controllers/session.controller');
 const userValidator = require('../middleware/validators/user.params.validator');
 const tokenValidator = require('../middleware/validators/token.validator');
+const checkPossibilityRegistration = require('../middleware/check.possibility.registration');
 
 const router = new Router({ prefix: '/api/mauth' });
 
 router.post(
   '/signup',
+  checkPossibilityRegistration,
   koaBody,
   userValidator.params,
   user.signup,

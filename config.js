@@ -49,6 +49,9 @@ module.exports = {
     ignore: process.env.VERIFICATION_IGNORE === 'true',
     ttl: process.env.VERIFICATION_TTL || '10 minute',
   },
+  registration: {
+    prohibited: process.env.REGISTRATION_PROHIBITED === 'true',
+  },
   log: {
     file: 'app.log',
   },
