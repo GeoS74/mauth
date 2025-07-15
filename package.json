@@ -8,7 +8,8 @@
     "lint:fix": "eslint . --fix",
     "db:init": "node ./libs/db.init.js",
     "db:drop": "node ./libs/db.init.js --drop",
-    "test": "mocha --no-warnings --ignore=node_modules/** --ignore=client/** **/*.test.js"
+    "test": "mocha --no-warnings --ignore=node_modules/** --ignore=client/** **/*.test.js",
+    "initAdmin": "node ./libs/default.user.init.js"
   },
   "keywords": [
     "microservice",
