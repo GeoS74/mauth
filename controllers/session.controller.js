@@ -38,6 +38,15 @@ module.exports.destroy = async (ctx) => {
   };
 };
 
+module.exports.destroyUserSession = async (ctx) => {
+  await _destroySessionByEmail(ctx.request.body.email);
+
+  ctx.status = 200;
+  ctx.body = {
+    message: 'session destroyed',
+  };
+};
+
 function _generateTokens(user) {
   return {
     refresh: uuid(),
@@ -77,6 +86,12 @@ async function _findSession(token) {
       lastvisit > NOW() - INTERVAL '${config.session.ttl}'
   `, [token])
     .then((res) => res.rows[0]);
+}
+
+async function _destroySessionByEmail(email) {
+  return db.query(`DELETE FROM sessions
+      where id_user=(SELECT id FROM users WHERE email=$1 LIMIT 1)
+  `, [email]);
 }
 
 async function _destroySession(token) {

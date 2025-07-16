@@ -1,6 +1,6 @@
 {
   "name": "mauth",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "microservice for authorization and registration users",
   "main": "index.js",
   "scripts": {

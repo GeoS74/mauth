@@ -102,6 +102,14 @@ module.exports.changepass = async (ctx) => {
   };
 };
 
+module.exports.changepassUser = async (ctx) => {
+  await _setNewPassword(ctx.request.body.email, ctx.request.body.password);
+  ctx.status = 200;
+  ctx.body = {
+    message: 'password changed successfully',
+  };
+};
+
 module.exports.me = async (ctx) => {
   const user = await _findUserByEmail(ctx.user.email);
   if (!user) {
