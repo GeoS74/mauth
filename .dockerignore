@@ -1,10 +1,14 @@
 /client
 /log
 /node_modules
+/scripts
+/test
+.gits
+.dockerignore
+.eslintrc.js
+.gitignore
+docker-compose.yml
 Dockerfile
 Makefile
-.dockerignore
-.git
-.gitignore
 pm2.config.js
 secret.env

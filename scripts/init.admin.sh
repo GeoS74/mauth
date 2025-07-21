@@ -37,6 +37,6 @@ CONTAINER_NAME="your_container_name"
 # Выполняем команду в контейнере
 echo "Выполняю: npm run initAdmin --email $user_email"
 npm run initAdmin $user_email
-# docker exec -it $CONTAINER_NAME npm run foo -- --email "$user_email"
+# docker exec -it $CONTAINER_NAME npm run initAdmin --email "$user_email"
 
 echo "Команда успешно выполнена с email: $user_email"
